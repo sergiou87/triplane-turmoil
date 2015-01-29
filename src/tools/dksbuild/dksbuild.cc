@@ -68,7 +68,7 @@ int filelength(FILE *faili)
 int main(int argc,char **argv)
 {
   FILE *in,*out;
-  char tekstia[20];
+  char tekstia[20] = {0};
   int kohtien_lukumaara=0;
   char ch;
   char file_to_be[80];
