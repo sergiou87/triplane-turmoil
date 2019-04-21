@@ -164,7 +164,7 @@ extern configuration config;
 void load_keyset(void);
 void save_keyset(void);
 int select_key(int player, int old);
-void wait_relase(void);
+void wait_release(void);
 
 void load_roster(void);
 void save_roster(void);

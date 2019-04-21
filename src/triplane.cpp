@@ -1866,7 +1866,7 @@ void main_engine(void) {
     if (!draw_with_vircr_mode)
         update_vircr_mode = 1;
 
-    wait_relase();
+    wait_release();
     mission_re_fly = -1;
 
     //// Close joysticks
@@ -3671,8 +3671,9 @@ int main(int argc, char *argv[]) {
 
     if (is_there_sound) {
         if (config.music_on) {
-            loading_text("Loading music.");
-            load_music();
+            // TODO: FIX MEEEEEE
+//            loading_text("Loading music.");
+//            load_music();
         }
 
         if (config.sfx_on) {
@@ -3683,7 +3684,6 @@ int main(int argc, char *argv[]) {
 
         loading_text("Soundsystem initialized correctly.\n\n");
     }
-
 
     init_vga("PALETD");
     lakuva1 = new Bitmap("STARTD", 0);

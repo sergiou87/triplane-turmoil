@@ -29,11 +29,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <set>
 
 
 //\\ Keys
 
-Uint8 *key = SDL_GetKeyState(NULL);
+const Uint8 *key = SDL_GetKeyboardState(NULL);
 struct keymap player_keys[4];
 
 //\\ Rosterdata
@@ -43,6 +44,125 @@ struct rosteri roster[MAX_PLAYERS_IN_ROSTER];
 //\\ Game config
 
 struct configuration config;
+
+std::set<unsigned int> validKeys = { 
+    SDLK_RETURN,
+    SDLK_BACKSPACE,
+    SDLK_TAB,
+    SDLK_SPACE,
+    SDLK_EXCLAIM,
+    SDLK_QUOTEDBL,
+    SDLK_HASH,
+    SDLK_PERCENT,
+    SDLK_DOLLAR,
+    SDLK_AMPERSAND,
+    SDLK_QUOTE,
+    SDLK_LEFTPAREN,
+    SDLK_RIGHTPAREN,
+    SDLK_ASTERISK,
+    SDLK_PLUS,
+    SDLK_COMMA,
+    SDLK_MINUS,
+    SDLK_PERIOD,
+    SDLK_SLASH,
+    SDLK_0,
+    SDLK_1,
+    SDLK_2,
+    SDLK_3,
+    SDLK_4,
+    SDLK_5,
+    SDLK_6,
+    SDLK_7,
+    SDLK_8,
+    SDLK_9,
+    SDLK_COLON,
+    SDLK_SEMICOLON,
+    SDLK_LESS,
+    SDLK_EQUALS,
+    SDLK_GREATER,
+    SDLK_QUESTION,
+    SDLK_AT,
+    SDLK_LEFTBRACKET,
+    SDLK_BACKSLASH,
+    SDLK_RIGHTBRACKET,
+    SDLK_CARET,
+    SDLK_UNDERSCORE,
+    SDLK_BACKQUOTE,
+    SDLK_a,
+    SDLK_b,
+    SDLK_c,
+    SDLK_d,
+    SDLK_e,
+    SDLK_f,
+    SDLK_g,
+    SDLK_h,
+    SDLK_i,
+    SDLK_j,
+    SDLK_k,
+    SDLK_l,
+    SDLK_m,
+    SDLK_n,
+    SDLK_o,
+    SDLK_p,
+    SDLK_q,
+    SDLK_r,
+    SDLK_s,
+    SDLK_t,
+    SDLK_u,
+    SDLK_v,
+    SDLK_w,
+    SDLK_x,
+    SDLK_y,
+    SDLK_z,
+    SDLK_CAPSLOCK,
+    SDLK_F1,
+    SDLK_F2,
+    SDLK_F3,
+    SDLK_F4,
+    SDLK_F5,
+    SDLK_F6,
+    SDLK_F7,
+    SDLK_F8,
+    SDLK_F9,
+    SDLK_F10,
+    SDLK_F11,
+    SDLK_F12,
+    SDLK_PRINTSCREEN,
+    SDLK_INSERT,
+    SDLK_HOME,
+    SDLK_PAGEUP,
+    SDLK_DELETE,
+    SDLK_END,
+    SDLK_PAGEDOWN,
+    SDLK_RIGHT,
+    SDLK_LEFT,
+    SDLK_DOWN,
+    SDLK_UP,
+    SDLK_KP_DIVIDE,
+    SDLK_KP_MULTIPLY,
+    SDLK_KP_MINUS,
+    SDLK_KP_PLUS,
+    SDLK_KP_ENTER,
+    SDLK_KP_1,
+    SDLK_KP_2,
+    SDLK_KP_3,
+    SDLK_KP_4,
+    SDLK_KP_5,
+    SDLK_KP_6,
+    SDLK_KP_7,
+    SDLK_KP_8,
+    SDLK_KP_9,
+    SDLK_KP_0,
+    SDLK_KP_PERIOD,
+    SDLK_LCTRL,
+    SDLK_LSHIFT,
+    SDLK_LALT,
+    SDLK_LGUI,
+    SDLK_RCTRL,
+    SDLK_RSHIFT,
+    SDLK_RALT,
+    SDLK_RGUI,
+};
 
 /*
  * Find settings directory and create it if necessary. Directories are
@@ -76,7 +196,7 @@ static void find_settings_directory(char *dir) {
         strncat(dir, "/.triplane", FILENAME_MAX - 1);
         ret = stat(dir, &st);
         if (ret) {
-            ret = mkdir(dir, 0755);
+            ret = mkdir(dir);//, 0755);
             if (ret) {
                 fprintf(stderr, "Failed to create settings directory \"%s\".\n", dir);
                 exit(1);
@@ -106,20 +226,22 @@ FILE *settings_open(const char *filename, const char *mode) {
     return fp;
 }
 
-void wait_relase(void) {
-    int c = 0;
+void wait_release(void) {
+    bool pressed = true;
 
-    while (c != SDLK_LAST) {
+    while (pressed) {
         update_key_state();
-        for (c = 0; c < SDLK_LAST; c++)
-            if (key[c] && c != SDLK_NUMLOCK && c != SDLK_CAPSLOCK && c != SDLK_SCROLLOCK)
+        pressed = false;
+        for (auto c : validKeys)
+            if (key[c] && c != SDLK_NUMLOCKCLEAR && c != SDLK_CAPSLOCK && c != SDLK_SCROLLLOCK) {
+                pressed = true;
                 break;
+            }
     }
 
 }
 
 int select_key(int player, int old) {
-    int c;
     int flag = 1;
 
     while (flag) {
@@ -128,20 +250,24 @@ int select_key(int player, int old) {
 
         update_key_state();
 
-        for (c = 0; c < SDLK_LAST; c++)
-            if (key[c] && c != SDLK_NUMLOCK && c != SDLK_CAPSLOCK && c != SDLK_SCROLLOCK)
-                break;
+        unsigned int pressedKey = SDLK_UNKNOWN;
 
-        if (c != SDLK_LAST)
-            if ((c != SDLK_ESCAPE) && (c != SDLK_PAUSE)) {
-                wait_relase();
-                return c;
+        for (auto c : validKeys)
+            if (key[c] && c != SDLK_NUMLOCKCLEAR && c != SDLK_CAPSLOCK && c != SDLK_SCROLLLOCK) {
+                pressedKey = c;
+                break;
+            }
+
+        if (pressedKey != SDLK_UNKNOWN)
+            if ((pressedKey != SDLK_ESCAPE) && (pressedKey != SDLK_PAUSE)) {
+                wait_release();
+                return pressedKey;
             }
         if (player == 100)
             return 100;
     }
 
-    wait_relase();
+    wait_release();
     return old;
 
 }
@@ -277,7 +403,7 @@ void load_keyset(void) {
 
         player_keys[1].up = SDLK_DOWN;
         player_keys[1].down = SDLK_UP;
-        player_keys[1].roll = SDLK_KP5;
+        player_keys[1].roll = SDLK_KP_5;
         player_keys[1].power = SDLK_KP_PLUS;
         player_keys[1].guns = SDLK_HOME;
         player_keys[1].bombs = SDLK_LEFT;

@@ -21,7 +21,7 @@
 /*******************************************************************************
 
    Purpose: 
-   	Mouse handling part of Wsystem 2.0 for DJGPP v.2.0á5
+   	Mouse handling part of Wsystem 2.0 for DJGPP v.2.0ï¿½5
 
 *******************************************************************************/
 
@@ -30,7 +30,7 @@
 #include <SDL.h>
 
 void hiiri_to(int x, int y) {
-    SDL_WarpMouse(x * pixel_multiplier, y * pixel_multiplier);
+    SDL_WarpMouseInWindow(video_state.window, x * pixel_multiplier, y * pixel_multiplier);
 }
 
 void koords(int *x, int *y, int *n1, int *n2) {

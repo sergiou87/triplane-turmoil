@@ -35,9 +35,9 @@ struct naytto {
 extern naytto ruutu;
 
 struct video_state_t {
-    SDL_Surface *surface;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
     int init_done;
-    int haverealpalette;
 };
 extern struct video_state_t video_state;
 extern SDL_Color curpal[256];

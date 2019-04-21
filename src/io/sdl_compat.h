@@ -37,7 +37,7 @@
 int kbhit(void);
 int getch(void);
 
-extern unsigned char *key;
+extern const unsigned char *key;
 
 typedef struct {
     int right_volume, left_volume;
