@@ -3671,9 +3671,8 @@ int main(int argc, char *argv[]) {
 
     if (is_there_sound) {
         if (config.music_on) {
-            // TODO: FIX MEEEEEE
-//            loading_text("Loading music.");
-//            load_music();
+            loading_text("Loading music.");
+            load_music();
         }
 
         if (config.sfx_on) {

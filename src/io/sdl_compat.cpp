@@ -226,11 +226,7 @@ sb_mod_file *sdl_load_mod_file(const char *name) {
     mod = (sb_mod_file *) walloc(sizeof(sb_mod_file));
 
     rwops = SDL_RWFromConstMem(p, len);
-#if SDL_MAJOR_VERSION == 2
-    mod->music = Mix_LoadMUS_RW(rwops, SDL_TRUE);
-#else
-    mod->music = Mix_LoadMUS_RW(rwops);
-#endif
+    mod->music = Mix_LoadMUS_RW(rwops, SDL_FALSE);
     SDL_FreeRW(rwops);
     if (mod->music == NULL) {
         fprintf(stderr, "sdl_load_mod_file: %s\n", Mix_GetError());
