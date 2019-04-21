@@ -416,8 +416,50 @@ void load_keyset(void) {
     }
 }
 
+void restore_default_roster(FILE *faili) {
+
+    for (int l = 0; l < MAX_PLAYERS_IN_ROSTER; l++) {
+        roster[l].pilotname[0] = 0;
+        roster[l].solo_mis_flown = 0;
+        roster[l].solo_mis_success = 0;
+        roster[l].solo_mis_drops = 0;
+        roster[l].solo_mis_shotsf = 0;
+        roster[l].solo_mis_shotshit = 0;
+        roster[l].solo_mis_bombs = 0;
+        roster[l].solo_mis_bombshit = 0;
+        roster[l].solo_mis_totals = 0;
+        roster[l].solo_mis_dropped = 0;
+
+        for (int l2 = 0; l2 < 4; l2++)
+            for (int l3 = 0; l3 < 7; l3++)
+                roster[l].solo_mis_scores[l2][l3] = 0;
+
+        roster[l].multi_mis_flown = 0;
+        roster[l].multi_mis_success = 0;
+        roster[l].multi_mis_drops = 0;
+        roster[l].multi_mis_shotsf = 0;
+        roster[l].multi_mis_shotshit = 0;
+        roster[l].multi_mis_bombs = 0;
+        roster[l].multi_mis_bombshit = 0;
+        roster[l].multi_mis_totals = 0;
+        roster[l].multi_mis_dropped = 0;
+
+        roster[l].up = SDLK_x;
+        roster[l].down = SDLK_w;
+        roster[l].roll = SDLK_s;
+        roster[l].power = SDLK_TAB;
+        roster[l].guns = SDLK_2;
+        roster[l].bombs = SDLK_1;
+
+    }
+
+    swap_roster_endianes();
+    fwrite(&roster, sizeof(roster), 1, faili);
+    fclose(faili);
+    swap_roster_endianes();
+}
+
 void load_roster(void) {
-    int l, l2, l3;
     FILE *faili;
 
     if ((faili = settings_open(ROSTER_FILENAME, "rb")) == NULL) {
@@ -426,45 +468,8 @@ void load_roster(void) {
             exit(1);
         }
 
-        for (l = 0; l < MAX_PLAYERS_IN_ROSTER; l++) {
-            roster[l].pilotname[0] = 0;
-            roster[l].solo_mis_flown = 0;
-            roster[l].solo_mis_success = 0;
-            roster[l].solo_mis_drops = 0;
-            roster[l].solo_mis_shotsf = 0;
-            roster[l].solo_mis_shotshit = 0;
-            roster[l].solo_mis_bombs = 0;
-            roster[l].solo_mis_bombshit = 0;
-            roster[l].solo_mis_totals = 0;
-            roster[l].solo_mis_dropped = 0;
+        restore_default_roster(faili);
 
-            for (l2 = 0; l2 < 4; l2++)
-                for (l3 = 0; l3 < 7; l3++)
-                    roster[l].solo_mis_scores[l2][l3] = 0;
-
-            roster[l].multi_mis_flown = 0;
-            roster[l].multi_mis_success = 0;
-            roster[l].multi_mis_drops = 0;
-            roster[l].multi_mis_shotsf = 0;
-            roster[l].multi_mis_shotshit = 0;
-            roster[l].multi_mis_bombs = 0;
-            roster[l].multi_mis_bombshit = 0;
-            roster[l].multi_mis_totals = 0;
-            roster[l].multi_mis_dropped = 0;
-
-            roster[l].up = SDLK_x;
-            roster[l].down = SDLK_w;
-            roster[l].roll = SDLK_s;
-            roster[l].power = SDLK_TAB;
-            roster[l].guns = SDLK_2;
-            roster[l].bombs = SDLK_1;
-
-        }
-
-        swap_roster_endianes();
-        fwrite(&roster, sizeof(roster), 1, faili);
-        fclose(faili);
-        swap_roster_endianes();
     } else {
         struct stat sb;
         struct dos_roster droster[MAX_PLAYERS_IN_ROSTER];
@@ -477,17 +482,20 @@ void load_roster(void) {
             ret = fread(&hdr, sizeof(hdr), 1, faili);
             if (ret != 1) {
                 printf("failed to read roster.dta header\n");
-                exit(1);
+                restore_default_roster(faili);
+                return;
             }
             hdr.magic = SDL_SwapLE32(hdr.magic);
             hdr.version = SDL_SwapLE32(hdr.version);
             if (hdr.magic != ROSTERI_MAGIC) {
                 printf("invalid roster.dta magic %08x, expected %08x\n", hdr.magic, ROSTERI_MAGIC);
-                exit(1);
+                restore_default_roster(faili);
+                return;
             }
             if (hdr.version != ROSTERI_VERSION) {
                 printf("unsupported roster.dta version %08x\n", hdr.version);
-                exit(1);
+                restore_default_roster(faili);
+                return;
             }
             fread(&roster, sizeof(roster), 1, faili);
         } else {
