@@ -42,7 +42,11 @@ int kbhit(void) {
 
     nopeuskontrolli();
 
+#if SDL_MAJOR_VERSION == 2
+    ret = SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, ~0, ~0);
+#else
     ret = SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, ~0);
+#endif
     if (ret) {
         if (e.type == SDL_KEYUP) {
             return 1;
@@ -222,7 +226,11 @@ sb_mod_file *sdl_load_mod_file(const char *name) {
     mod = (sb_mod_file *) walloc(sizeof(sb_mod_file));
 
     rwops = SDL_RWFromConstMem(p, len);
+#if SDL_MAJOR_VERSION == 2
+    mod->music = Mix_LoadMUS_RW(rwops, SDL_TRUE);
+#else
     mod->music = Mix_LoadMUS_RW(rwops);
+#endif
     SDL_FreeRW(rwops);
     if (mod->music == NULL) {
         fprintf(stderr, "sdl_load_mod_file: %s\n", Mix_GetError());

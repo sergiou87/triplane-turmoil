@@ -159,9 +159,22 @@ void Bitmap::refresh_sdlsurface() {
         fprintf(stderr, "SDL_CreateRGBSurfaceFrom: %s\n", SDL_GetError());
         exit(1);
     }
+
+#if SDL_MAJOR_VERSION == 2
+    SDL_SetPaletteColors(tmps->format->palette, curpal, 0, 256);
+#else
     SDL_SetPalette(tmps, SDL_LOGPAL, curpal, 0, 256);
+#endif
+
     if (hastransparency)
+#if SDL_MAJOR_VERSION == 2
+        SDL_SetColorKey(tmps, SDL_TRUE, 0xff);
+#else
         SDL_SetColorKey(tmps, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0xff);
+#endif
+#if SDL_MAJOR_VERSION == 2
+    sdlsurface = tmps;// SDL_ConvertSurfaceFormat(tmps, SDL_GetWindowPixelFormat(window), 0);
+#else
     sdlsurface = SDL_DisplayFormat(tmps);
     if (sdlsurface == NULL) {
         fprintf(stderr, "SDL_DisplayFormat: %s\n", SDL_GetError());
@@ -169,6 +182,8 @@ void Bitmap::refresh_sdlsurface() {
     }
 
     SDL_FreeSurface(tmps);
+#endif
+
     if (pixel_multiplier > 1) {
         wfree(imgmult);
     }
