@@ -3,11 +3,11 @@ DESTDIR ?=
 
 CXX	     ?= g++
 OPTIFLAG     = -O2 -g
-SDL_CONFIG  ?= sdl-config
+SDL_CONFIG  ?= sdl2-config
 VERSION      = 1.0.8
 CFLAGS      := -Wall -Isrc $(OPTIFLAG) $(CFLAGS_NOSDL) `$(SDL_CONFIG) --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_DATA=\"$(PREFIX)/share/games/triplane\"" "-DTRIPLANE_VERSION=\"$(VERSION)\""
 LDFLAGS      = 
-LIBS        := `$(SDL_CONFIG) --libs` -lSDL_mixer -lm
+LIBS        := `$(SDL_CONFIG) --libs` -lSDL2_mixer -lm
 INSTALL_DATA     ?= install -m 644
 INSTALL_PROGRAM  ?= install
 

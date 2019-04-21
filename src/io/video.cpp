@@ -33,7 +33,7 @@ struct naytto ruutu;
 int current_mode = VGA_MODE;
 unsigned char *vircr;
 int update_vircr_mode = 1;
-int draw_with_vircr_mode = 1;
+int draw_with_vircr_mode = 0;
 int pixel_multiplier = 1;       /* current pixel multiplier */
 int pixel_multiplier_vga = 1, pixel_multiplier_svga = 1;
 int wantfullscreen = 1;
@@ -64,20 +64,20 @@ void setpal_range(const char pal[][3], int firstcolor, int n, int reverse) {
             from++;
     }
 
-    if (draw_with_vircr_mode) {
-        SDL_SetPalette(video_state.surface, video_state.haverealpalette ? SDL_PHYSPAL : SDL_LOGPAL, cc, firstcolor, n);
-    } else {
-        SDL_SetPalette(video_state.surface, SDL_PHYSPAL | SDL_LOGPAL, cc, firstcolor, n);
-    }
+    // if (draw_with_vircr_mode) {
+    //     SDL_SetPalette(video_state.surface, video_state.haverealpalette ? SDL_PHYSPAL : SDL_LOGPAL, cc, firstcolor, n);
+    // } else {
+    //     SDL_SetPalette(video_state.surface, SDL_PHYSPAL | SDL_LOGPAL, cc, firstcolor, n);
+    // }
     memcpy(&curpal[firstcolor], cc, n * sizeof(SDL_Color));
     wfree(cc);
 }
 
 static Uint32 getcolor(unsigned char c) {
-    if (video_state.haverealpalette)
+    // if (video_state.haverealpalette)
         return c;
-    else
-        return SDL_MapRGB(video_state.surface->format, curpal[c].r, curpal[c].g, curpal[c].b);
+    // else
+    //     return SDL_MapRGB(video_state.surface->format, curpal[c].r, curpal[c].g, curpal[c].b);
 }
 
 void fillrect(int x, int y, int w, int h, int c) {
@@ -92,69 +92,69 @@ void fillrect(int x, int y, int w, int h, int c) {
         r.w *= pixel_multiplier;
         r.h *= pixel_multiplier;
     }
-    SDL_FillRect(video_state.surface, &r, getcolor(c));
+    // SDL_FillRect(video_state.surface, &r, getcolor(c));
 }
 
 void do_all(int do_retrace) {
-    if (draw_with_vircr_mode) {
-        if (pixel_multiplier > 1) {
-            int i, j, k;
-            int w = (current_mode == VGA_MODE) ? 320 : 800;
-            int h = (current_mode == VGA_MODE) ? 200 : 600;
-            uint8_t *in = vircr, *out = (uint8_t *) video_state.surface->pixels;
-            /* optimized versions using 32-bit and 16-bit writes when possible */
-            if (pixel_multiplier == 4 && sizeof(char *) >= 4) { /* word size >= 4 */
-                uint32_t cccc;
-                for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-                    for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-                        cccc = *in | (*in << 8) | (*in << 16) | (*in << 24);
-                        in++;
-                        for (k = 0; k < pixel_multiplier; k++) {
-                            *(uint32_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cccc;
-                        }
-                    }
-                }
-            } else if (pixel_multiplier == 3) {
-                uint16_t cc, c;
-                for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-                    for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-                        c = *in++;
-                        cc = c | (c << 8);
-                        for (k = 0; k < pixel_multiplier; k++) {
-                            *(uint16_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cc;
-                            out[(j + k) * (w * pixel_multiplier) + i + 2] = c;
-                        }
-                    }
-                }
-            } else if (pixel_multiplier == 2) {
-                uint16_t cc;
-                for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-                    for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-                        cc = *in | (*in << 8);
-                        in++;
-                        for (k = 0; k < pixel_multiplier; k++) {
-                            *(uint16_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cc;
-                        }
-                    }
-                }
-            } else {            /* unoptimized version */
-                int l;
-                uint8_t c;
-                for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-                    for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-                        c = *in++;
-                        for (k = 0; k < pixel_multiplier; k++) {
-                            for (l = 0; l < pixel_multiplier; l++) {
-                                out[(j + k) * (w * pixel_multiplier) + (i + l)] = c;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // if (draw_with_vircr_mode) {
+    //     if (pixel_multiplier > 1) {
+    //         int i, j, k;
+    //         int w = (current_mode == VGA_MODE) ? 320 : 800;
+    //         int h = (current_mode == VGA_MODE) ? 200 : 600;
+    //         uint8_t *in = vircr, *out = (uint8_t *) video_state.surface->pixels;
+    //         /* optimized versions using 32-bit and 16-bit writes when possible */
+    //         if (pixel_multiplier == 4 && sizeof(char *) >= 4) { /* word size >= 4 */
+    //             uint32_t cccc;
+    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
+    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
+    //                     cccc = *in | (*in << 8) | (*in << 16) | (*in << 24);
+    //                     in++;
+    //                     for (k = 0; k < pixel_multiplier; k++) {
+    //                         *(uint32_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cccc;
+    //                     }
+    //                 }
+    //             }
+    //         } else if (pixel_multiplier == 3) {
+    //             uint16_t cc, c;
+    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
+    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
+    //                     c = *in++;
+    //                     cc = c | (c << 8);
+    //                     for (k = 0; k < pixel_multiplier; k++) {
+    //                         *(uint16_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cc;
+    //                         out[(j + k) * (w * pixel_multiplier) + i + 2] = c;
+    //                     }
+    //                 }
+    //             }
+    //         } else if (pixel_multiplier == 2) {
+    //             uint16_t cc;
+    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
+    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
+    //                     cc = *in | (*in << 8);
+    //                     in++;
+    //                     for (k = 0; k < pixel_multiplier; k++) {
+    //                         *(uint16_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cc;
+    //                     }
+    //                 }
+    //             }
+    //         } else {            /* unoptimized version */
+    //             int l;
+    //             uint8_t c;
+    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
+    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
+    //                     c = *in++;
+    //                     for (k = 0; k < pixel_multiplier; k++) {
+    //                         for (l = 0; l < pixel_multiplier; l++) {
+    //                             out[(j + k) * (w * pixel_multiplier) + (i + l)] = c;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    SDL_Flip(video_state.surface);
+    // SDL_Flip(video_state.surface);
 }
 
 static void sigint_handler(int dummy) {
@@ -174,7 +174,6 @@ void init_video(void) {
         atexit(SDL_Quit);
         video_state.init_done = 1;
 
-        SDL_WM_SetCaption("Triplane Classic", "Triplane Classic");
         SDL_ShowCursor(SDL_DISABLE);
 
         if (!draw_with_vircr_mode) {
@@ -185,38 +184,46 @@ void init_video(void) {
 
 static int init_mode(int new_mode, const char *paletname) {
     Uint32 mode_flags;
-    const SDL_VideoInfo *vi;
+    // const SDL_VideoInfo *vi;
     int las, las2;
     int w = (new_mode == SVGA_MODE) ? 800 : 320;
     int h = (new_mode == SVGA_MODE) ? 600 : 200;
 
     init_video();
 
-    mode_flags = SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWPALETTE;
+    mode_flags = /*SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWPALETTE |*/ SDL_WINDOW_OPENGL;
 
-    if (!draw_with_vircr_mode)
-        mode_flags |= SDL_ANYFORMAT;
-    if (wantfullscreen)
-        mode_flags |= SDL_FULLSCREEN;
+    // if (!draw_with_vircr_mode)
+    //     mode_flags |= SDL_ANYFORMAT;
+    // if (wantfullscreen)
+    //     mode_flags |= SDL_WINDOW_FULLSCREEN;
 
     if (draw_with_vircr_mode && pixel_multiplier > 1)
         wfree(vircr);
 
     pixel_multiplier = (new_mode == SVGA_MODE) ? pixel_multiplier_svga : pixel_multiplier_vga;
 
-    video_state.surface = SDL_SetVideoMode(w * pixel_multiplier, h * pixel_multiplier, 8, mode_flags);
-    assert(video_state.surface);
+    video_state.window = SDL_CreateWindow("My Game Window",
+                            SDL_WINDOWPOS_UNDEFINED,
+                            SDL_WINDOWPOS_UNDEFINED,
+                            w * pixel_multiplier,
+                            h * pixel_multiplier,
+                            mode_flags);
+    assert(video_state.window);
 
-    if (draw_with_vircr_mode) {
-        if (pixel_multiplier > 1) {
-            vircr = (uint8_t *) walloc(w * h);
-        } else {
-            vircr = (uint8_t *) video_state.surface->pixels;
-        }
-    }
+    video_state.renderer = SDL_CreateRenderer(video_state.window, -1, 0);
+    assert(video_state.renderer);
+
+    // if (draw_with_vircr_mode) {
+    //     if (pixel_multiplier > 1) {
+    //         vircr = (uint8_t *) walloc(w * h);
+    //     } else {
+    //         vircr = (uint8_t *) video_state.surface->pixels;
+    //     }
+    // }
     /* else vircr is preallocated in init_video */
-    vi = SDL_GetVideoInfo();
-    video_state.haverealpalette = (vi->vfmt->palette != NULL);
+    // vi = SDL_GetVideoInfo();
+    // video_state.haverealpalette = (vi->vfmt->palette != NULL);
 
     dksopen(paletname);
 
