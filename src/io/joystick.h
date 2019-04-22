@@ -21,12 +21,6 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
-// Vakiom„„rittelyt eri tietojen bittimaskeille
-#define JOY1X 0x01              // Akselibitit ovat aina 1 jos joystick
-#define JOY1Y 0x02              // ei ole kytkettyn„.
-#define JOY2X 0x04
-#define JOY2Y 0x08
-
 struct joystick_action {
     char type;                  /* 0 = none, 1 = button, 2 = axis */
     char n;                     /* nth button or axis */
@@ -39,9 +33,10 @@ struct joystick_configuration {
     /* if roll.type = 0, use autoroll */
     joystick_action up, down, roll, power, guns, bombs, brake;
 };
-extern joystick_configuration joystick_config[2];
+extern joystick_configuration joystick_config[4];
 
-short init_joysticks(void);
+void init_joysticks(void);
+int get_joysticks_count(void);
 int load_joysticks_data(const char *filename);
 void save_joysticks_data(const char *filename);
 void open_close_joysticks(int joy1, int joy2);

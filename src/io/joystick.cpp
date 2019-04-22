@@ -33,16 +33,14 @@
  */
 #define JOYSTICK_THRESHOLD_MULTIPLIER 0.8
 
-joystick_configuration joystick_config[2];
+joystick_configuration joystick_config[4];
 
-SDL_Joystick *joydev[2] = { NULL, NULL };
+SDL_GameController *joydev[4] = { NULL, NULL, NULL, NULL };
 
 /**
  * Initializes joystick configuration.
- * @return Bitwise or of JOY1X, JOY1Y, JOY2X and JOY2Y as
- * appropriate. 1 bit means that a device providing the axis is available
  */
-short init_joysticks(void) {
+void init_joysticks(void) {
     /* set default config, used if the configuration file does not exist */
     joystick_config[0].up.type = 2;
     joystick_config[0].up.n = 1;
@@ -73,13 +71,19 @@ short init_joysticks(void) {
      */
 
     memcpy(&joystick_config[1], &joystick_config[0], sizeof(joystick_configuration));
+    memcpy(&joystick_config[2], &joystick_config[0], sizeof(joystick_configuration));
+    memcpy(&joystick_config[3], &joystick_config[0], sizeof(joystick_configuration));
+}
 
-    if (SDL_NumJoysticks() >= 2)
-        return JOY1X | JOY1Y | JOY2X | JOY2Y;
-    else if (SDL_NumJoysticks() == 1)
-        return JOY1X | JOY1Y;
-    else
-        return 0;
+int get_joysticks_count(void) {
+    int nJoysticks = SDL_NumJoysticks();
+    int numGamepads = 0;
+
+    for (int i = 0; i < nJoysticks; i++)
+        if (SDL_IsGameController(i))
+            numGamepads++;
+
+    return numGamepads;
 }
 
 /**
@@ -116,31 +120,33 @@ void save_joysticks_data(const char *filename) {
  * @param joy2 = 1 if joystick 2 should be opened
  */
 void open_close_joysticks(int joy1, int joy2) {
-    if (SDL_NumJoysticks() >= 1) {
+    int joysticks_count = get_joysticks_count();
+
+    if (joysticks_count >= 1) {
         if (!joy1 && joydev[0] != NULL) {
-            SDL_JoystickClose(joydev[0]);
+            SDL_GameControllerClose(joydev[0]);
             joydev[0] = NULL;
         }
         if (joy1 && joydev[0] == NULL) {
-            joydev[0] = SDL_JoystickOpen(0);
+            joydev[0] = SDL_GameControllerOpen(0);
         }
     }
-    if (SDL_NumJoysticks() >= 2) {
+    if (joysticks_count >= 2) {
         if (!joy2 && joydev[1] != NULL) {
-            SDL_JoystickClose(joydev[1]);
+            SDL_GameControllerClose(joydev[1]);
             joydev[1] = NULL;
         }
         if (joy2 && joydev[1] == NULL) {
-            joydev[1] = SDL_JoystickOpen(1);
+            joydev[1] = SDL_GameControllerOpen(1);
         }
     }
 }
 
 static int is_joystick_action_active(int t, const joystick_action * a) {
     if (a->type == 1) {
-        return SDL_JoystickGetButton(joydev[t], a->n);
+        return SDL_GameControllerGetButton(joydev[t], (SDL_GameControllerButton)a->n);
     } else if (a->type == 2) {
-        Sint16 v = SDL_JoystickGetAxis(joydev[t], a->n);
+        Sint16 v = SDL_GameControllerGetAxis(joydev[t], (SDL_GameControllerAxis)a->n);
         if (a->threshold_dir == 1)      /* upper bound */
             return (v < a->threshold);
         else
@@ -194,31 +200,21 @@ int joystick_has_roll_button(int t) {
 
 /** Allocate enough memory to hold state of axes of given joy. */
 Sint16 *allocate_axis_state(int joy) {
-    return (Sint16 *) walloc(SDL_JoystickNumAxes(joydev[joy]) * sizeof(Sint16));
+    return (Sint16 *) walloc(SDL_CONTROLLER_AXIS_MAX * sizeof(Sint16));
 }
 
 /** Save state of all axes of a given joystick */
 void save_axis_state(Sint16 * axes, int joy) {
-    int i, num;
-
-    num = SDL_JoystickNumAxes(joydev[joy]);
-    assert(num >= 0);
-
-    for (i = 0; i < num; i++) {
-        axes[i] = SDL_JoystickGetAxis(joydev[joy], i);
+    for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++) {
+        axes[i] = SDL_GameControllerGetAxis(joydev[joy], (SDL_GameControllerAxis)i);
     }
 }
 
 /* Find axis that has changed most between idle and current state */
 void find_changed_axis(struct joystick_action *act, Sint16 * idle, Sint16 * current, int joy) {
-    int i, num, max_index, max_value;
-
-    num = SDL_JoystickNumAxes(joydev[joy]);
-    assert(num >= 0);
-
-    max_index = 0;
-    max_value = abs(idle[0] - current[0]);
-    for (i = 1; i < num; i++) {
+    int max_index = 0;
+    int max_value = abs(idle[0] - current[0]);
+    for (int i = 1; i < SDL_CONTROLLER_AXIS_MAX; i++) {
         int val;
         val = abs(idle[i] - current[i]);
         if (val > max_value) {
@@ -239,13 +235,8 @@ void find_changed_axis(struct joystick_action *act, Sint16 * idle, Sint16 * curr
 
 /** Find button that is down. Returns 0 if no buttons are pressed. */
 int find_changed_button(struct joystick_action *act, int joy) {
-    int i, num;
-
-    num = SDL_JoystickNumButtons(joydev[joy]);
-    assert(num >= 0);
-
-    for (i = 0; i < num; i++) {
-        if (SDL_JoystickGetButton(joydev[joy], i)) {
+    for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++) {
+        if (SDL_GameControllerGetButton(joydev[joy], (SDL_GameControllerButton) i)) {
             act->type = 1;
             act->n = i;
             return 1;

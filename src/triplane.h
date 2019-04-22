@@ -277,10 +277,6 @@ extern int bombs_going[100];
 
 //\\ Configuration
 
-extern short joystick_exists;
-
-
-
 extern int modem_com_port;
 extern int modem_com_speed;
 
