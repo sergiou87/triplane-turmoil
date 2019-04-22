@@ -294,7 +294,7 @@ void Bitmap::blit_fullscreen(void) {
         memcpy(vircr, image_data, 320 * 200);
 
     // if (!draw_with_vircr_mode)
-    //     SDL_BlitSurface(sdlsurface, NULL, video_state.surface, NULL);
+        SDL_BlitSurface(sdlsurface, NULL, video_state.surface, NULL);
 }
 
 /*
@@ -370,12 +370,12 @@ void Bitmap::blit(int xx, int yy, int rx, int ry, int rx2, int ry2) {
             pos.x *= pixel_multiplier;
             pos.y *= pixel_multiplier;
         }
-        // SDL_SetClipRect(video_state.surface, &clip);
-        // if (SDL_BlitSurface(sdlsurface, NULL, video_state.surface, &pos) != 0) {
-        //     fprintf(stderr, "SDL_BlitSurface: %s\n", SDL_GetError());
-        //     exit(1);
-        // }
-        // SDL_SetClipRect(video_state.surface, NULL);
+        SDL_SetClipRect(video_state.surface, &clip);
+        if (SDL_BlitSurface(sdlsurface, NULL, video_state.surface, &pos) != 0) {
+            fprintf(stderr, "SDL_BlitSurface: %s\n", SDL_GetError());
+            exit(1);
+        }
+        SDL_SetClipRect(video_state.surface, NULL);
     }
 }
 

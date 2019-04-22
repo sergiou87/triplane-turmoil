@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-struct video_state_t video_state = { NULL, 0, 0 };
+struct video_state_t video_state = { NULL, NULL, NULL, NULL, 0 };
 
 struct naytto ruutu;
 
@@ -64,6 +64,7 @@ void setpal_range(const char pal[][3], int firstcolor, int n, int reverse) {
             from++;
     }
 
+    SDL_SetPaletteColors(video_state.surface->format->palette, cc, firstcolor, n);
     // if (draw_with_vircr_mode) {
     //     SDL_SetPalette(video_state.surface, video_state.haverealpalette ? SDL_PHYSPAL : SDL_LOGPAL, cc, firstcolor, n);
     // } else {
@@ -92,7 +93,7 @@ void fillrect(int x, int y, int w, int h, int c) {
         r.w *= pixel_multiplier;
         r.h *= pixel_multiplier;
     }
-    // SDL_FillRect(video_state.surface, &r, getcolor(c));
+    SDL_FillRect(video_state.surface, &r, getcolor(c));
 }
 
 void do_all(int do_retrace) {
@@ -154,6 +155,12 @@ void do_all(int do_retrace) {
     //     }
     // }
 
+    SDL_UpdateTexture(video_state.texture, NULL, video_state.surface->pixels, video_state.surface->w * sizeof (Uint32));
+
+    SDL_RenderClear(video_state.renderer);
+    SDL_RenderCopy(video_state.renderer, video_state.texture, NULL, NULL);
+    SDL_RenderPresent(video_state.renderer);
+
     // SDL_Flip(video_state.surface);
 }
 
@@ -203,16 +210,34 @@ static int init_mode(int new_mode, const char *paletname) {
 
     pixel_multiplier = (new_mode == SVGA_MODE) ? pixel_multiplier_svga : pixel_multiplier_vga;
 
-    video_state.window = SDL_CreateWindow("My Game Window",
-                            SDL_WINDOWPOS_UNDEFINED,
-                            SDL_WINDOWPOS_UNDEFINED,
-                            w * pixel_multiplier,
-                            h * pixel_multiplier,
-                            mode_flags);
-    assert(video_state.window);
+    int width = w * pixel_multiplier;
+    int height = h * pixel_multiplier;
 
-    video_state.renderer = SDL_CreateRenderer(video_state.window, -1, 0);
-    assert(video_state.renderer);
+    if (video_state.window == NULL) {
+        video_state.window = SDL_CreateWindow("Triplane Classic",
+                                SDL_WINDOWPOS_UNDEFINED,
+                                SDL_WINDOWPOS_UNDEFINED,
+                                1920,
+                                1080,
+                                mode_flags);
+        assert(video_state.window);
+
+        video_state.renderer = SDL_CreateRenderer(video_state.window, -1, 0);
+        assert(video_state.renderer);
+    }
+    else {
+        SDL_SetWindowSize(video_state.window, 1920, 1080);
+
+        SDL_DestroyTexture(video_state.texture);
+        video_state.texture = NULL;
+
+        SDL_FreeSurface(video_state.surface);
+    }
+
+    video_state.texture = SDL_CreateTexture(video_state.renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, width, height);
+    assert(video_state.texture);
+
+    video_state.surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 8, SDL_PIXELFORMAT_ARGB32);
 
     // if (draw_with_vircr_mode) {
     //     if (pixel_multiplier > 1) {

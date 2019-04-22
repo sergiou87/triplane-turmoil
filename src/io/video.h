@@ -37,6 +37,8 @@ extern naytto ruutu;
 struct video_state_t {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Texture *texture;
+    SDL_Surface *surface;
     int init_done;
 };
 extern struct video_state_t video_state;
