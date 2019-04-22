@@ -21,6 +21,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 #include <stdio.h>
+#include <SDL.h>
 
 #define ROSTER_FILENAME "roster.dta"
 #define MAX_PLAYERS_IN_ROSTER 150
@@ -28,12 +29,12 @@
 #define KEYSET_FILENAME "keyset.dta"
 
 struct keymap {
-    int32_t up;
-    int32_t down;
-    int32_t roll;
-    int32_t power;
-    int32_t guns;
-    int32_t bombs;
+    SDL_Scancode up;
+    SDL_Scancode down;
+    SDL_Scancode roll;
+    SDL_Scancode power;
+    SDL_Scancode guns;
+    SDL_Scancode bombs;
 };
 
 extern keymap player_keys[4];
@@ -71,12 +72,12 @@ struct rosteri {
     int32_t multi_mis_totals;
     int32_t multi_mis_dropped;
 
-    int32_t up;
-    int32_t down;
-    int32_t roll;
-    int32_t power;
-    int32_t guns;
-    int32_t bombs;
+    SDL_Scancode up;
+    SDL_Scancode down;
+    SDL_Scancode roll;
+    SDL_Scancode power;
+    SDL_Scancode guns;
+    SDL_Scancode bombs;
 };
 
 struct dos_roster {
@@ -163,7 +164,7 @@ extern configuration config;
 
 void load_keyset(void);
 void save_keyset(void);
-int select_key(int player, int old);
+SDL_Scancode select_key(int player, SDL_Scancode old);
 void wait_release(void);
 
 void load_roster(void);
