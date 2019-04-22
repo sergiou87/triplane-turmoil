@@ -42,11 +42,7 @@ int kbhit(void) {
 
     nopeuskontrolli();
 
-#if SDL_MAJOR_VERSION == 2
     ret = SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, ~0, ~0);
-#else
-    ret = SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, ~0);
-#endif
     if (ret) {
         if (e.type == SDL_KEYUP) {
             return 1;

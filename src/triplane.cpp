@@ -3558,22 +3558,6 @@ void handle_parameters(void) {
         loading_text("Sounds disabled.");
     }
 
-    if (findparameter("-2")) {
-        pixel_multiplier_vga = 2;
-    }
-
-    if (findparameter("-3")) {
-        pixel_multiplier_vga = 3;
-    }
-
-    if (findparameter("-4")) {
-        pixel_multiplier_vga = 4;
-    }
-
-    if (findparameter("-2svga")) {
-        pixel_multiplier_svga = 2;
-    }
-
     if (findparameter("-fullscreen")) {
         wantfullscreen = 1;
     }
@@ -3609,8 +3593,6 @@ int main(int argc, char *argv[]) {
         printf("-fullscreen   Start game in fullscreen mode (default)\n");
         printf("-nofullscreen Start game in windowed mode\n");
         printf("-nosound      Start game without sounds\n");
-        printf("-2, -3, -4    Zoom the 320x200-pixel game window 2x, 3x or 4x\n");
-        printf("-2svga        Zoom the 800x600-pixel window 2x to produce 1600x1200-pixel window\n");
         printf("\n");
         exit(0);
     }
