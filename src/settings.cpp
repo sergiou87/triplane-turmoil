@@ -29,7 +29,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <set>
 
 
 //\\ Keys
@@ -44,125 +43,6 @@ struct rosteri roster[MAX_PLAYERS_IN_ROSTER];
 //\\ Game config
 
 struct configuration config;
-
-std::set<unsigned int> validKeys = { 
-    SDLK_RETURN,
-    SDLK_BACKSPACE,
-    SDLK_TAB,
-    SDLK_SPACE,
-    SDLK_EXCLAIM,
-    SDLK_QUOTEDBL,
-    SDLK_HASH,
-    SDLK_PERCENT,
-    SDLK_DOLLAR,
-    SDLK_AMPERSAND,
-    SDLK_QUOTE,
-    SDLK_LEFTPAREN,
-    SDLK_RIGHTPAREN,
-    SDLK_ASTERISK,
-    SDLK_PLUS,
-    SDLK_COMMA,
-    SDLK_MINUS,
-    SDLK_PERIOD,
-    SDLK_SLASH,
-    SDLK_0,
-    SDLK_1,
-    SDLK_2,
-    SDLK_3,
-    SDLK_4,
-    SDLK_5,
-    SDLK_6,
-    SDLK_7,
-    SDLK_8,
-    SDLK_9,
-    SDLK_COLON,
-    SDLK_SEMICOLON,
-    SDLK_LESS,
-    SDLK_EQUALS,
-    SDLK_GREATER,
-    SDLK_QUESTION,
-    SDLK_AT,
-    SDLK_LEFTBRACKET,
-    SDLK_BACKSLASH,
-    SDLK_RIGHTBRACKET,
-    SDLK_CARET,
-    SDLK_UNDERSCORE,
-    SDLK_BACKQUOTE,
-    SDLK_a,
-    SDLK_b,
-    SDLK_c,
-    SDLK_d,
-    SDLK_e,
-    SDLK_f,
-    SDLK_g,
-    SDLK_h,
-    SDLK_i,
-    SDLK_j,
-    SDLK_k,
-    SDLK_l,
-    SDLK_m,
-    SDLK_n,
-    SDLK_o,
-    SDLK_p,
-    SDLK_q,
-    SDLK_r,
-    SDLK_s,
-    SDLK_t,
-    SDLK_u,
-    SDLK_v,
-    SDLK_w,
-    SDLK_x,
-    SDLK_y,
-    SDLK_z,
-    SDLK_CAPSLOCK,
-    SDLK_F1,
-    SDLK_F2,
-    SDLK_F3,
-    SDLK_F4,
-    SDLK_F5,
-    SDLK_F6,
-    SDLK_F7,
-    SDLK_F8,
-    SDLK_F9,
-    SDLK_F10,
-    SDLK_F11,
-    SDLK_F12,
-    SDLK_PRINTSCREEN,
-    SDLK_INSERT,
-    SDLK_HOME,
-    SDLK_PAGEUP,
-    SDLK_DELETE,
-    SDLK_END,
-    SDLK_PAGEDOWN,
-    SDLK_RIGHT,
-    SDLK_LEFT,
-    SDLK_DOWN,
-    SDLK_UP,
-    SDLK_KP_DIVIDE,
-    SDLK_KP_MULTIPLY,
-    SDLK_KP_MINUS,
-    SDLK_KP_PLUS,
-    SDLK_KP_ENTER,
-    SDLK_KP_1,
-    SDLK_KP_2,
-    SDLK_KP_3,
-    SDLK_KP_4,
-    SDLK_KP_5,
-    SDLK_KP_6,
-    SDLK_KP_7,
-    SDLK_KP_8,
-    SDLK_KP_9,
-    SDLK_KP_0,
-    SDLK_KP_PERIOD,
-    SDLK_LCTRL,
-    SDLK_LSHIFT,
-    SDLK_LALT,
-    SDLK_LGUI,
-    SDLK_RCTRL,
-    SDLK_RSHIFT,
-    SDLK_RALT,
-    SDLK_RGUI,
-};
 
 /*
  * Find settings directory and create it if necessary. Directories are
@@ -227,44 +107,38 @@ FILE *settings_open(const char *filename, const char *mode) {
 }
 
 void wait_release(void) {
-    bool pressed = true;
+    int c = 0;
 
-    while (pressed) {
+    while (c != SDL_NUM_SCANCODES) {
         update_key_state();
-        pressed = false;
-        for (auto c : validKeys)
-            if (key[c] && c != SDLK_NUMLOCKCLEAR && c != SDLK_CAPSLOCK && c != SDLK_SCROLLLOCK) {
-                pressed = true;
+        for (c = 0; c < SDL_NUM_SCANCODES; c++)
+            if (key[c] && c != SDL_SCANCODE_NUMLOCKCLEAR && c != SDL_SCANCODE_CAPSLOCK && c != SDL_SCANCODE_SCROLLLOCK)
                 break;
-            }
     }
 
 }
 
-int select_key(int player, int old) {
+SDL_Scancode select_key(int player, SDL_Scancode old) {
+    int c;
     int flag = 1;
 
     while (flag) {
-        if (key[SDLK_ESCAPE])
+        if (key[SDL_SCANCODE_ESCAPE])
             flag = 0;
 
         update_key_state();
 
-        unsigned int pressedKey = SDLK_UNKNOWN;
-
-        for (auto c : validKeys)
-            if (key[c] && c != SDLK_NUMLOCKCLEAR && c != SDLK_CAPSLOCK && c != SDLK_SCROLLLOCK) {
-                pressedKey = c;
+        for (c = SDL_SCANCODE_UNKNOWN; c < SDL_NUM_SCANCODES; c++)
+            if (key[c] && c != SDL_SCANCODE_NUMLOCKCLEAR && c != SDL_SCANCODE_CAPSLOCK && c != SDL_SCANCODE_SCROLLLOCK)
                 break;
-            }
 
-        if (pressedKey != SDLK_UNKNOWN)
-            if ((pressedKey != SDLK_ESCAPE) && (pressedKey != SDLK_PAUSE)) {
+        if (c != SDL_NUM_SCANCODES)
+            if ((c != SDL_SCANCODE_ESCAPE) && (c != SDL_SCANCODE_PAUSE)) {
                 wait_release();
-                return pressedKey;
+                return (SDL_Scancode) c;
             }
         if (player == 100)
-            return 100;
+            return (SDL_Scancode) 100;
     }
 
     wait_release();
@@ -340,12 +214,12 @@ void convert_dos_roster(struct dos_roster *droster) {
         roster[l].multi_mis_totals = droster[l].multi_mis_totals;
         roster[l].multi_mis_dropped = droster[l].multi_mis_dropped;
 
-        roster[l].up = SDLK_x;
-        roster[l].down = SDLK_w;
-        roster[l].roll = SDLK_s;
-        roster[l].power = SDLK_TAB;
-        roster[l].guns = SDLK_2;
-        roster[l].bombs = SDLK_1;
+        roster[l].up = SDL_SCANCODE_X;
+        roster[l].down = SDL_SCANCODE_W;
+        roster[l].roll = SDL_SCANCODE_S;
+        roster[l].power = SDL_SCANCODE_TAB;
+        roster[l].guns = SDL_SCANCODE_2;
+        roster[l].bombs = SDL_SCANCODE_1;
     }
 }
 
@@ -380,33 +254,33 @@ void load_keyset(void) {
     FILE *faili;
 
     if ((faili = settings_open("keyset.dta", "rb")) == NULL) {
-        player_keys[0].up = SDLK_x;
-        player_keys[0].down = SDLK_w;
-        player_keys[0].roll = SDLK_s;
-        player_keys[0].power = SDLK_TAB;
-        player_keys[0].guns = SDLK_2;
-        player_keys[0].bombs = SDLK_1;
+        player_keys[0].up = SDL_SCANCODE_X;
+        player_keys[0].down = SDL_SCANCODE_W;
+        player_keys[0].roll = SDL_SCANCODE_S;
+        player_keys[0].power = SDL_SCANCODE_TAB;
+        player_keys[0].guns = SDL_SCANCODE_2;
+        player_keys[0].bombs = SDL_SCANCODE_1;
 
-        player_keys[2].up = SDLK_v;
-        player_keys[2].down = SDLK_t;
-        player_keys[2].roll = SDLK_g;
-        player_keys[2].power = SDLK_j;
-        player_keys[2].guns = SDLK_h;
-        player_keys[2].bombs = SDLK_y;
+        player_keys[2].up = SDL_SCANCODE_V;
+        player_keys[2].down = SDL_SCANCODE_T;
+        player_keys[2].roll = SDL_SCANCODE_G;
+        player_keys[2].power = SDL_SCANCODE_J;
+        player_keys[2].guns = SDL_SCANCODE_H;
+        player_keys[2].bombs = SDL_SCANCODE_Y;
 
-        player_keys[3].up = SDLK_COMMA;
-        player_keys[3].down = SDLK_o;
-        player_keys[3].roll = SDLK_l;
-        player_keys[3].power = 40;
-        player_keys[3].guns = 39;
-        player_keys[3].bombs = SDLK_p;
+        player_keys[3].up = SDL_SCANCODE_COMMA;
+        player_keys[3].down = SDL_SCANCODE_O;
+        player_keys[3].roll = SDL_SCANCODE_L;
+        player_keys[3].power = SDL_SCANCODE_APOSTROPHE;
+        player_keys[3].guns = SDL_SCANCODE_PERIOD;
+        player_keys[3].bombs = SDL_SCANCODE_P;
 
-        player_keys[1].up = SDLK_DOWN;
-        player_keys[1].down = SDLK_UP;
-        player_keys[1].roll = SDLK_KP_5;
-        player_keys[1].power = SDLK_KP_PLUS;
-        player_keys[1].guns = SDLK_HOME;
-        player_keys[1].bombs = SDLK_LEFT;
+        player_keys[1].up = SDL_SCANCODE_DOWN;
+        player_keys[1].down = SDL_SCANCODE_UP;
+        player_keys[1].roll = SDL_SCANCODE_KP_5;
+        player_keys[1].power = SDL_SCANCODE_KP_PLUS;
+        player_keys[1].guns = SDL_SCANCODE_HOME;
+        player_keys[1].bombs = SDL_SCANCODE_LEFT;
 
         save_keyset();
     } else {
@@ -444,12 +318,12 @@ void restore_default_roster(FILE *faili) {
         roster[l].multi_mis_totals = 0;
         roster[l].multi_mis_dropped = 0;
 
-        roster[l].up = SDLK_x;
-        roster[l].down = SDLK_w;
-        roster[l].roll = SDLK_s;
-        roster[l].power = SDLK_TAB;
-        roster[l].guns = SDLK_2;
-        roster[l].bombs = SDLK_1;
+        roster[l].up = SDL_SCANCODE_X;
+        roster[l].down = SDL_SCANCODE_W;
+        roster[l].roll = SDL_SCANCODE_S;
+        roster[l].power = SDL_SCANCODE_TAB;
+        roster[l].guns = SDL_SCANCODE_2;
+        roster[l].bombs = SDL_SCANCODE_1;
 
     }
 

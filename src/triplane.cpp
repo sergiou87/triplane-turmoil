@@ -1661,17 +1661,17 @@ void main_engine(void) {
     while (flag) {
         update_key_state();
 
-        if (key[SDLK_PAUSE]) {
+        if (key[SDL_SCANCODE_PAUSE]) {
             // wait until pause key is released, then pressed and released again
-            while (key[SDLK_PAUSE]) {   // still pressed
+            while (key[SDL_SCANCODE_PAUSE]) {   // still pressed
                 nopeuskontrolli();
                 update_key_state();
             }
-            while (!key[SDLK_PAUSE]) {  // released
+            while (!key[SDL_SCANCODE_PAUSE]) {  // released
                 nopeuskontrolli();
                 update_key_state();
             }
-            while (key[SDLK_PAUSE]) {   // pressed again
+            while (key[SDL_SCANCODE_PAUSE]) {   // pressed again
                 nopeuskontrolli();
                 update_key_state();
             }
@@ -1679,23 +1679,23 @@ void main_engine(void) {
         // use F4 as an alias for the Pause key
         // because Pause does not always work reliably
         // (and is not present on all keyboards)
-        if (key[SDLK_F4]) {
+        if (key[SDL_SCANCODE_F4]) {
             // wait until F4 is released, then pressed and released again
-            while (key[SDLK_F4]) {      // still pressed
+            while (key[SDL_SCANCODE_F4]) {      // still pressed
                 nopeuskontrolli();
                 update_key_state();
             }
-            while (!key[SDLK_F4]) {     // released
+            while (!key[SDL_SCANCODE_F4]) {     // released
                 nopeuskontrolli();
                 update_key_state();
             }
-            while (key[SDLK_F4]) {      // pressed again
+            while (key[SDL_SCANCODE_F4]) {      // pressed again
                 nopeuskontrolli();
                 update_key_state();
             }
         }
 
-        if (key[SDLK_ESCAPE]) {
+        if (key[SDL_SCANCODE_ESCAPE]) {
             flag = 0;
             mission_interrupted = 1;
         }
@@ -1814,7 +1814,7 @@ void main_engine(void) {
                     solo_success = 1;
             }
 
-            if (key[SDLK_F1] && key[SDLK_F2] && key[SDLK_F3]) {
+            if (key[SDL_SCANCODE_F1] && key[SDL_SCANCODE_F2] && key[SDL_SCANCODE_F3]) {
                 frost->printf(40, 40, "SoloDestRemaining: %d. l=%d\n", solo_dest_remaining, l);
 
             }
@@ -2337,7 +2337,7 @@ void do_aftermath(int show_it_all) {
                 }
                 cursor->blit(x - 10, y - 10);
                 do_all_clear();
-                wait_mouse_relase();
+                wait_mouse_release();
             } else {
                 cursor->blit(x - 10, y - 10);
                 do_all_clear();
@@ -3715,7 +3715,7 @@ int main(int argc, char *argv[]) {
         koords(&x, &y, &n1, &n2);
 
         if (n1 || n2) {
-            wait_mouse_relase();
+            wait_mouse_release();
             break;
         }
 
@@ -3745,7 +3745,7 @@ int main(int argc, char *argv[]) {
         koords(&x, &y, &n1, &n2);
 
         if (n1 || n2) {
-            wait_mouse_relase();
+            wait_mouse_release();
             break;
         }
 

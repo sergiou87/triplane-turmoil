@@ -25,6 +25,7 @@
 #include "tripmenu.h"
 #include <SDL.h>
 #include <time.h>
+#include <string>
 #include <string.h>
 #include "io/joystick.h"
 #include "io/sdl_compat.h"
@@ -67,7 +68,7 @@ void show_feat5(void) {
     int n1 = 0, n2 = 0;
     int x, y;
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
     feat5->info(&x, &y);
 
@@ -80,7 +81,7 @@ void show_feat5(void) {
     }
 
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 
 }
@@ -643,7 +644,7 @@ int solo_player_menu(void) {
     }
 
     while (flag == 0) {
-        if (kbhit() && getch() == SDLK_ESCAPE) {
+        if (kbhit() && getch() == SDL_SCANCODE_ESCAPE) {
             flag = 2;
         }
 
@@ -693,7 +694,7 @@ int solo_player_menu(void) {
 
     }
 
-    wait_mouse_relase(1);
+    wait_mouse_release(1);
     switch (flag) {
 
     case 1:
@@ -724,6 +725,10 @@ int solo_player_menu(void) {
     }
 
 
+}
+
+std::string name_for_key(SDL_Scancode key) {
+    return std::string(SDL_GetKeyName(SDL_GetKeyFromScancode(key)));
 }
 
 void roster_menu(void) {
@@ -806,10 +811,10 @@ void roster_menu(void) {
                 setk1->blit(125, 172);
 
                 frost->printf(125, 93, "Up [%s]\nDown [%s]\nRoll [%s]",
-                              SDL_GetKeyName((SDL_Keycode) roster[number].up), SDL_GetKeyName((SDL_Keycode) roster[number].down),
-                              SDL_GetKeyName((SDL_Keycode) roster[number].roll));
-                frost->printf(170, 114, "Power [%s]\nBombs [%s]\nGuns [%s]\n", SDL_GetKeyName((SDL_Keycode) roster[number].power),
-                              SDL_GetKeyName((SDL_Keycode) roster[number].bombs), SDL_GetKeyName((SDL_Keycode) roster[number].guns));
+                              name_for_key(roster[number].up).c_str(), name_for_key(roster[number].down).c_str(),
+                              name_for_key(roster[number].roll).c_str());
+                frost->printf(170, 114, "Power [%s]\nBombs [%s]\nGuns [%s]\n", name_for_key(roster[number].power).c_str(),
+                              name_for_key(roster[number].bombs).c_str(), name_for_key(roster[number].guns).c_str());
 
             }
         } else {
@@ -952,12 +957,12 @@ void roster_menu(void) {
                     for (l2 = 0; l2 < 6; l2++)
                         roster[number].solo_mis_scores[l][l2] = 0;
 
-                roster[number].up = SDLK_x;
-                roster[number].down = SDLK_w;
-                roster[number].roll = SDLK_s;
-                roster[number].power = SDLK_TAB;
-                roster[number].guns = SDLK_2;
-                roster[number].bombs = SDLK_1;
+                roster[number].up = SDL_SCANCODE_X;
+                roster[number].down = SDL_SCANCODE_W;
+                roster[number].roll = SDL_SCANCODE_S;
+                roster[number].power = SDL_SCANCODE_TAB;
+                roster[number].guns = SDL_SCANCODE_2;
+                roster[number].bombs = SDL_SCANCODE_1;
 
                 grid2->scanf(125, 50, roster[number].pilotname, 21);
                 if (!roster[number].pilotname[0]) {
@@ -982,7 +987,7 @@ void roster_menu(void) {
                 buttl->blit(187, 174);
                 cursor->blit(x - 10, y - 10);
                 do_all();
-                wait_mouse_relase();
+                wait_mouse_release();
                 if (number <= 0)
                     break;
                 number--;
@@ -992,7 +997,7 @@ void roster_menu(void) {
                 buttr->blit(205, 174);
                 cursor->blit(x - 10, y - 10);
                 do_all();
-                wait_mouse_relase();
+                wait_mouse_release();
                 number++;
                 if ((number == MAX_PLAYERS_IN_ROSTER) | (roster[number].pilotname[0] == 0))
                     number--;
@@ -1002,7 +1007,7 @@ void roster_menu(void) {
                 setk2->blit(286, 190);
                 cursor->blit(x - 10, y - 10);
                 do_all();
-                wait_mouse_relase();
+                wait_mouse_release();
                 wtoggle(&keysetmode);
                 break;
 
@@ -1010,44 +1015,44 @@ void roster_menu(void) {
                 setk2->blit(125, 172);
                 cursor->blit(x - 10, y - 10);
                 do_all();
-                wait_mouse_relase();
+                wait_mouse_release();
 
                 rosteri->blit(0, 0);
 
-                frost->printf(125, 100, "Key for upward turn [%s]", SDL_GetKeyName((SDL_Keycode) roster[number].up));
+                frost->printf(125, 100, "Key for upward turn [%s]", name_for_key(roster[number].up).c_str());
                 do_all();
 
                 roster[number].up = select_key(number, roster[number].up);
 
                 rosteri->blit(0, 0);
-                frost->printf(125, 100, "Key for downward turn [%s]", SDL_GetKeyName((SDL_Keycode) roster[number].down));
+                frost->printf(125, 100, "Key for downward turn [%s]", name_for_key(roster[number].down).c_str());
                 do_all();
 
                 roster[number].down = select_key(number, roster[number].down);
 
                 rosteri->blit(0, 0);
-                frost->printf(125, 100, "Key for roll [%s]", SDL_GetKeyName((SDL_Keycode) roster[number].roll));
+                frost->printf(125, 100, "Key for roll [%s]", name_for_key(roster[number].roll).c_str());
                 do_all();
 
                 roster[number].roll = select_key(number, roster[number].roll);
 
                 rosteri->blit(0, 0);
 
-                frost->printf(125, 100, "Key for engine power [%s]", SDL_GetKeyName((SDL_Keycode) roster[number].power));
+                frost->printf(125, 100, "Key for engine power [%s]", name_for_key(roster[number].power).c_str());
                 do_all();
 
                 roster[number].power = select_key(number, roster[number].power);
 
                 rosteri->blit(0, 0);
 
-                frost->printf(125, 100, "Key for bomb drop [%s]", SDL_GetKeyName((SDL_Keycode) roster[number].bombs));
+                frost->printf(125, 100, "Key for bomb drop [%s]", name_for_key(roster[number].bombs).c_str());
                 do_all();
 
                 roster[number].bombs = select_key(number, roster[number].bombs);
 
                 rosteri->blit(0, 0);
 
-                frost->printf(125, 100, "Key for guns [%s]", SDL_GetKeyName((SDL_Keycode) roster[number].guns));
+                frost->printf(125, 100, "Key for guns [%s]", name_for_key(roster[number].guns).c_str());
                 do_all();
 
                 roster[number].guns = select_key(number, roster[number].guns);
@@ -1112,7 +1117,7 @@ void roster_menu(void) {
                 if (roster[0].pilotname[0] && number == -1)
                     number = 0;
 
-                wait_mouse_relase();
+                wait_mouse_release();
                 break;
 
 
@@ -1135,7 +1140,7 @@ void roster_menu(void) {
     for (l = 0; l < 6; l++)
         delete ribbon[l];
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 
 }
@@ -1875,7 +1880,7 @@ void options_menu(void) {
     if (!config.sound_on && (is_there_sound == 1))
         uninit_sounds();
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 }
 
@@ -1971,7 +1976,7 @@ void transfer_menu(void) {
     delete optionme;
 
 
-    wait_mouse_relase();
+    wait_mouse_release();
 }
 
 static void joystick_setup(int joy, Bitmap * controlme) {
@@ -2130,10 +2135,10 @@ void controls_menu(void) {
 
         if (config.joystick[0] != active && config.joystick[1] != active) {
             frost->printf(170, 93, "Up [%s] Down [%s] Roll [%s]",
-                          SDL_GetKeyName((SDL_Keycode) player_keys[active].up), SDL_GetKeyName((SDL_Keycode) player_keys[active].down),
-                          SDL_GetKeyName((SDL_Keycode) player_keys[active].roll));
-            frost->printf(170, 100, "Power [%s] Bombs [%s] Guns [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].power),
-                          SDL_GetKeyName((SDL_Keycode) player_keys[active].bombs), SDL_GetKeyName((SDL_Keycode) player_keys[active].guns));
+                          name_for_key(player_keys[active].up).c_str(), name_for_key(player_keys[active].down).c_str(),
+                          name_for_key(player_keys[active].roll).c_str());
+            frost->printf(170, 100, "Power [%s] Bombs [%s] Guns [%s]", name_for_key(player_keys[active].power).c_str(),
+                          name_for_key(player_keys[active].bombs).c_str(), name_for_key(player_keys[active].guns).c_str());
         } else {
             int joy = (config.joystick[0] == active) ? 0 : 1;
             char *ups = get_joy_action_string(&joystick_config[joy].up);
@@ -2178,42 +2183,42 @@ void controls_menu(void) {
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
-                frost->printf(56, 97, "Key for upward turn [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].up));
+                frost->printf(56, 97, "Key for upward turn [%s]", name_for_key(player_keys[active].up).c_str());
                 do_all();
 
                 player_keys[active].up = select_key(active, player_keys[active].up);
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
-                frost->printf(56, 97, "Key for downward turn [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].down));
+                frost->printf(56, 97, "Key for downward turn [%s]", name_for_key(player_keys[active].down).c_str());
                 do_all();
 
                 player_keys[active].down = select_key(active, player_keys[active].down);
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
-                frost->printf(56, 97, "Key for roll [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].roll));
+                frost->printf(56, 97, "Key for roll [%s]", name_for_key(player_keys[active].roll).c_str());
                 do_all();
 
                 player_keys[active].roll = select_key(active, player_keys[active].roll);
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
-                frost->printf(56, 97, "Key for engine power [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].power));
+                frost->printf(56, 97, "Key for engine power [%s]", name_for_key(player_keys[active].power).c_str());
                 do_all();
 
                 player_keys[active].power = select_key(active, player_keys[active].power);
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
-                frost->printf(56, 97, "Key for bomb drop [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].bombs));
+                frost->printf(56, 97, "Key for bomb drop [%s]", name_for_key(player_keys[active].bombs).c_str());
                 do_all();
 
                 player_keys[active].bombs = select_key(active, player_keys[active].bombs);
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
-                frost->printf(56, 97, "Key for guns [%s]", SDL_GetKeyName((SDL_Keycode) player_keys[active].guns));
+                frost->printf(56, 97, "Key for guns [%s]", name_for_key(player_keys[active].guns).c_str());
                 do_all();
 
                 player_keys[active].guns = select_key(active, player_keys[active].guns);
@@ -2258,7 +2263,7 @@ void controls_menu(void) {
     delete controlme;
     delete help;
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 }
 
@@ -2549,7 +2554,7 @@ void assign_menu(void) {
         }
 
         if (n1 || n2)
-            wait_mouse_relase();
+            wait_mouse_release();
 
     }
 
@@ -2564,7 +2569,7 @@ void assign_menu(void) {
     delete ruksi;
     delete help;
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 }
 
@@ -2709,7 +2714,7 @@ void aces_menu(void) {
         cursor->blit(x - 10, y - 10);
         do_all_clear();
         if (n1 || n2)
-            wait_mouse_relase();
+            wait_mouse_release();
     }
 
 
@@ -2729,7 +2734,7 @@ void aces_menu(void) {
     delete buttl;
     delete buttr;
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 }
 
@@ -2776,7 +2781,7 @@ int kangas_menu(void) {
     }
 
     while (!exit_flag) {
-        if (kbhit() && getch() == SDLK_ESCAPE) {
+        if (kbhit() && getch() == SDL_SCANCODE_ESCAPE) {
             exit_flag = 1;
         }
 
@@ -2850,7 +2855,7 @@ int kangas_menu(void) {
                 break;
 
             case 5:
-                wait_mouse_relase();
+                wait_mouse_release();
                 wtoggle(&showing_texts);
             }
         }
@@ -2881,7 +2886,7 @@ int kangas_menu(void) {
     }
 
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
     init_vga("PALET5");
 
@@ -2957,7 +2962,7 @@ void credits_menu(void) {
     delete credi1;
     delete grid3;
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
 }
 
@@ -3027,7 +3032,7 @@ void letter_menu(void) {
 
 
 
-    wait_mouse_relase();
+    wait_mouse_release();
 
     if (is_there_sound && config.music_on && !findparameter("-nomusic")) {
         sdl_stop_music();
@@ -3063,7 +3068,7 @@ void main_menu(void) {
             if (ch == SDLK_F1) {
                 wtoggle(&help_on);
             } else {
-                if (ch == SDLK_ESCAPE)
+                if (ch == SDL_SCANCODE_ESCAPE)
                     exit_flag = 1;
             }
         }
@@ -3327,7 +3332,7 @@ void main_menu(void) {
                 if (n1)
                     random_fade_out();
 
-                wait_mouse_relase();
+                wait_mouse_release();
 
                 if (config.svga && solo_mode == -1)
                     if (!findparameter("-debugnographics")) {
@@ -3402,7 +3407,7 @@ void main_menu(void) {
             case 3:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 roster_menu();
 
                 break;
@@ -3410,7 +3415,7 @@ void main_menu(void) {
             case 4:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 aces_menu();
 
                 break;
@@ -3418,7 +3423,7 @@ void main_menu(void) {
             case 5:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 controls_menu();
 
                 break;
@@ -3426,7 +3431,7 @@ void main_menu(void) {
             case 6:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 options_menu();
 
                 break;
@@ -3434,7 +3439,7 @@ void main_menu(void) {
             case 7:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 transfer_menu();
 
                 break;
@@ -3442,7 +3447,7 @@ void main_menu(void) {
             case 8:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 assign_menu();
                 hiiri_to(254, 120);
                 break;
@@ -3450,7 +3455,7 @@ void main_menu(void) {
             case 9:
                 if (n1)
                     random_fade_out();
-                wait_mouse_relase();
+                wait_mouse_release();
                 credits_menu();
 
                 break;
@@ -3513,7 +3518,7 @@ void print_filled_roster(int number) {
 
 }
 
-void wait_mouse_relase(int nokb) {
+void wait_mouse_release(int nokb) {
     int n1 = 1, n2 = 1, x, y;
 
     while (n1 || n2) {
