@@ -30,17 +30,31 @@
 #include <SDL.h>
 
 void hiiri_to(int x, int y) {
-    SDL_WarpMouseInWindow(video_state.window, x * pixel_multiplier, y * pixel_multiplier);
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(video_state.window, &windowWidth, &windowHeight);
+
+    int mouseX = x * windowWidth / video_state.surface->w;
+    int mouseY = y * windowHeight / video_state.surface->h;
+
+    SDL_WarpMouseInWindow(video_state.window, mouseX, mouseY);
 }
 
 void koords(int *x, int *y, int *n1, int *n2) {
     Uint8 ret;
 
+    int mouseX, mouseY;
+
     SDL_PumpEvents();
-    ret = SDL_GetMouseState(x, y);
+    ret = SDL_GetMouseState(&mouseX, &mouseY);
     *n1 = !!(ret & SDL_BUTTON(1));
     *n2 = !!(ret & SDL_BUTTON(3));
 
-    *x /= pixel_multiplier;
-    *y /= pixel_multiplier;
+    mouseX /= pixel_multiplier;
+    mouseY /= pixel_multiplier;
+
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(video_state.window, &windowWidth, &windowHeight);
+
+    *x = mouseX * video_state.surface->w / windowWidth;
+    *y = mouseY * video_state.surface->h / windowHeight;
 }
