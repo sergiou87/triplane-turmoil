@@ -300,8 +300,6 @@ int bombs_going[100];
 
 //\\ Configuration
 
-short joystick_exists;
-
 int modem_com_port = 2;
 int modem_com_speed = 9600;
 
@@ -3620,10 +3618,8 @@ int main(int argc, char *argv[]) {
     /* needs draw_with_vircr_mode parameter from handle_parameters() */
     init_video();
 
-    loading_text("Looking for joystick");
-    if (!(joystick_exists = init_joysticks())) {
-        loading_text("Joystick(s) not detected and thus not calibrated.");
-    }
+    loading_text("Initializing joystick data");
+    init_joysticks();
 
     if (config.joystick_calibrated[1] || config.joystick_calibrated[0]) {
         if (!load_joysticks_data(CALIBRATION_FILENAME)) {
@@ -3634,7 +3630,6 @@ int main(int argc, char *argv[]) {
             loading_text("Unable to load calibration data.");
 
         }
-
     }
 
     loading_text("\nLoading keyset.");

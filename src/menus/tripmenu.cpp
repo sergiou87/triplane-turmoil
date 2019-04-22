@@ -2227,7 +2227,7 @@ void controls_menu(void) {
                 break;
 
             case 8:
-                if (joystick_exists & (JOY1X + JOY1Y)) {
+                if (get_joysticks_count() >= 1) {
                     config.joystick[0] = active;
                     if (config.joystick[1] == active)
                         config.joystick[1] = -1;
@@ -2238,7 +2238,7 @@ void controls_menu(void) {
                 break;
 
             case 9:
-                if (joystick_exists & (JOY2X + JOY2Y)) {
+                if (get_joysticks_count() >= 2) {
                     config.joystick[1] = active;
                     if (config.joystick[0] == active)
                         config.joystick[0] = -1;
