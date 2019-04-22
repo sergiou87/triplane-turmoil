@@ -3068,7 +3068,7 @@ void main_menu(void) {
             if (ch == SDLK_F1) {
                 wtoggle(&help_on);
             } else {
-                if (ch == SDL_SCANCODE_ESCAPE)
+                if (ch == SDLK_ESCAPE)
                     exit_flag = 1;
             }
         }

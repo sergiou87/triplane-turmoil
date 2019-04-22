@@ -42,7 +42,7 @@ int kbhit(void) {
 
     nopeuskontrolli();
 
-    ret = SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, ~0, ~0);
+    ret = SDL_PeepEvents(&e, 1, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
     if (ret) {
         if (e.type == SDL_KEYUP) {
             return 1;
