@@ -76,68 +76,7 @@ void all_bitmaps_refresh(void) {
         all_bitmaps[i]->refresh_sdlsurface();
 }
 
-/* Make a copy of the image data in source, enlarged zoom times */
-static unsigned char *duplicate_enlarged(const unsigned char *source, int width, int height, int zoom) {
-    uint8_t *target = (uint8_t *) walloc(width * height * zoom * zoom);
-    int i, j, k;
-    const uint8_t *in = source;
-    uint8_t *out = target;
-
-    /* optimized versions using 32-bit and 16-bit writes when possible */
-    if (zoom == 4 && sizeof(char *) >= 4) {     /* word size >= 4 */
-        uint32_t cccc;
-        for (j = 0; j < height * zoom; j += zoom) {
-            for (i = 0; i < width * zoom; i += zoom) {
-                cccc = *in | (*in << 8) | (*in << 16) | (*in << 24);
-                in++;
-                for (k = 0; k < zoom; k++) {
-                    *(uint32_t *) (&out[(j + k) * (width * zoom) + i]) = cccc;
-                }
-            }
-        }
-    } else if (zoom == 3) {
-        uint16_t cc, c;
-        for (j = 0; j < height * zoom; j += zoom) {
-            for (i = 0; i < width * zoom; i += zoom) {
-                c = *in++;
-                cc = c | (c << 8);
-                for (k = 0; k < zoom; k++) {
-                    *(uint16_t *) (&out[(j + k) * (width * zoom) + i]) = cc;
-                    out[(j + k) * (width * zoom) + i + 2] = c;
-                }
-            }
-        }
-    } else if (zoom == 2) {
-        uint16_t cc;
-        for (j = 0; j < height * zoom; j += zoom) {
-            for (i = 0; i < width * zoom; i += zoom) {
-                cc = *in | (*in << 8);
-                in++;
-                for (k = 0; k < zoom; k++) {
-                    *(uint16_t *) (&out[(j + k) * (width * zoom) + i]) = cc;
-                }
-            }
-        }
-    } else {                    /* unoptimized version */
-        int l;
-        uint8_t c;
-        for (j = 0; j < height * zoom; j += zoom) {
-            for (i = 0; i < width * zoom; i += zoom) {
-                c = *in++;
-                for (k = 0; k < zoom; k++) {
-                    for (l = 0; l < zoom; l++) {
-                        out[(j + k) * (width * zoom) + (i + l)] = c;
-                    }
-                }
-            }
-        }
-    }
-
-    return target;
-}
-
 void Bitmap::refresh_sdlsurface() {
-    unsigned char *imgmult = NULL;
     SDL_Surface *tmps;
 
     if (sdlsurface != NULL) {
@@ -148,45 +87,18 @@ void Bitmap::refresh_sdlsurface() {
     if (draw_with_vircr_mode)
         return;                 /* sdlsurfaces are not used */
 
-    if (pixel_multiplier > 1) {
-        imgmult = duplicate_enlarged(image_data, width, height, pixel_multiplier);
-        tmps = SDL_CreateRGBSurfaceFrom(imgmult, width * pixel_multiplier, height * pixel_multiplier, 8, width * pixel_multiplier, 0, 0, 0, 0);
-    } else {
-        tmps = SDL_CreateRGBSurfaceFrom(image_data, width, height, 8, width, 0, 0, 0, 0);
-    }
+    tmps = SDL_CreateRGBSurfaceFrom(image_data, width, height, 8, width, 0, 0, 0, 0);
 
     if (tmps == NULL) {
         fprintf(stderr, "SDL_CreateRGBSurfaceFrom: %s\n", SDL_GetError());
         exit(1);
     }
 
-#if SDL_MAJOR_VERSION == 2
     SDL_SetPaletteColors(tmps->format->palette, curpal, 0, 256);
-#else
-    SDL_SetPalette(tmps, SDL_LOGPAL, curpal, 0, 256);
-#endif
 
     if (hastransparency)
-#if SDL_MAJOR_VERSION == 2
         SDL_SetColorKey(tmps, SDL_TRUE, 0xff);
-#else
-        SDL_SetColorKey(tmps, SDL_SRCCOLORKEY | SDL_RLEACCEL, 0xff);
-#endif
-#if SDL_MAJOR_VERSION == 2
     sdlsurface = tmps;// SDL_ConvertSurfaceFormat(tmps, SDL_GetWindowPixelFormat(window), 0);
-#else
-    sdlsurface = SDL_DisplayFormat(tmps);
-    if (sdlsurface == NULL) {
-        fprintf(stderr, "SDL_DisplayFormat: %s\n", SDL_GetError());
-        exit(1);
-    }
-
-    SDL_FreeSurface(tmps);
-#endif
-
-    if (pixel_multiplier > 1) {
-        wfree(imgmult);
-    }
 }
 
 Bitmap::Bitmap(const char *image_name, int transparent) {
@@ -362,14 +274,6 @@ void Bitmap::blit(int xx, int yy, int rx, int ry, int rx2, int ry2) {
         clip.h = ry2 - ry + 1;
         pos.x = xx;
         pos.y = yy;
-        if (pixel_multiplier > 1) {
-            clip.x *= pixel_multiplier;
-            clip.y *= pixel_multiplier;
-            clip.w *= pixel_multiplier;
-            clip.h *= pixel_multiplier;
-            pos.x *= pixel_multiplier;
-            pos.y *= pixel_multiplier;
-        }
         SDL_SetClipRect(video_state.surface, &clip);
         if (SDL_BlitSurface(sdlsurface, NULL, video_state.surface, &pos) != 0) {
             fprintf(stderr, "SDL_BlitSurface: %s\n", SDL_GetError());

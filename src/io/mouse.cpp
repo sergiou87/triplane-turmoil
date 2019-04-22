@@ -49,9 +49,6 @@ void koords(int *x, int *y, int *n1, int *n2) {
     *n1 = !!(ret & SDL_BUTTON(1));
     *n2 = !!(ret & SDL_BUTTON(3));
 
-    mouseX /= pixel_multiplier;
-    mouseY /= pixel_multiplier;
-
     int windowWidth, windowHeight;
     SDL_GetWindowSize(video_state.window, &windowWidth, &windowHeight);
 

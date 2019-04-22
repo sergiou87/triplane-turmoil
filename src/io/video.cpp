@@ -34,8 +34,6 @@ int current_mode = VGA_MODE;
 unsigned char *vircr;
 int update_vircr_mode = 1;
 int draw_with_vircr_mode = 0;
-int pixel_multiplier = 1;       /* current pixel multiplier */
-int pixel_multiplier_vga = 1, pixel_multiplier_svga = 1;
 int wantfullscreen = 1;
 
 SDL_Color curpal[256];
@@ -87,81 +85,15 @@ void fillrect(int x, int y, int w, int h, int c) {
     r.y = y;
     r.w = w;
     r.h = h;
-    if (pixel_multiplier > 1) {
-        r.x *= pixel_multiplier;
-        r.y *= pixel_multiplier;
-        r.w *= pixel_multiplier;
-        r.h *= pixel_multiplier;
-    }
     SDL_FillRect(video_state.surface, &r, getcolor(c));
 }
 
 void do_all(int do_retrace) {
-    // if (draw_with_vircr_mode) {
-    //     if (pixel_multiplier > 1) {
-    //         int i, j, k;
-    //         int w = (current_mode == VGA_MODE) ? 320 : 800;
-    //         int h = (current_mode == VGA_MODE) ? 200 : 600;
-    //         uint8_t *in = vircr, *out = (uint8_t *) video_state.surface->pixels;
-    //         /* optimized versions using 32-bit and 16-bit writes when possible */
-    //         if (pixel_multiplier == 4 && sizeof(char *) >= 4) { /* word size >= 4 */
-    //             uint32_t cccc;
-    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-    //                     cccc = *in | (*in << 8) | (*in << 16) | (*in << 24);
-    //                     in++;
-    //                     for (k = 0; k < pixel_multiplier; k++) {
-    //                         *(uint32_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cccc;
-    //                     }
-    //                 }
-    //             }
-    //         } else if (pixel_multiplier == 3) {
-    //             uint16_t cc, c;
-    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-    //                     c = *in++;
-    //                     cc = c | (c << 8);
-    //                     for (k = 0; k < pixel_multiplier; k++) {
-    //                         *(uint16_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cc;
-    //                         out[(j + k) * (w * pixel_multiplier) + i + 2] = c;
-    //                     }
-    //                 }
-    //             }
-    //         } else if (pixel_multiplier == 2) {
-    //             uint16_t cc;
-    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-    //                     cc = *in | (*in << 8);
-    //                     in++;
-    //                     for (k = 0; k < pixel_multiplier; k++) {
-    //                         *(uint16_t *) (&out[(j + k) * (w * pixel_multiplier) + i]) = cc;
-    //                     }
-    //                 }
-    //             }
-    //         } else {            /* unoptimized version */
-    //             int l;
-    //             uint8_t c;
-    //             for (j = 0; j < h * pixel_multiplier; j += pixel_multiplier) {
-    //                 for (i = 0; i < w * pixel_multiplier; i += pixel_multiplier) {
-    //                     c = *in++;
-    //                     for (k = 0; k < pixel_multiplier; k++) {
-    //                         for (l = 0; l < pixel_multiplier; l++) {
-    //                             out[(j + k) * (w * pixel_multiplier) + (i + l)] = c;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     SDL_UpdateTexture(video_state.texture, NULL, video_state.surface->pixels, video_state.surface->w * sizeof (Uint32));
 
     SDL_RenderClear(video_state.renderer);
     SDL_RenderCopy(video_state.renderer, video_state.texture, NULL, NULL);
     SDL_RenderPresent(video_state.renderer);
-
-    // SDL_Flip(video_state.surface);
 }
 
 static void sigint_handler(int dummy) {
@@ -217,13 +149,8 @@ static int init_mode(int new_mode, const char *paletname) {
 
     init_video();
 
-    if (draw_with_vircr_mode && pixel_multiplier > 1)
-        wfree(vircr);
-
-    pixel_multiplier = (new_mode == SVGA_MODE) ? pixel_multiplier_svga : pixel_multiplier_vga;
-
-    int width = w * pixel_multiplier;
-    int height = h * pixel_multiplier;
+    int width = w;
+    int height = h;
 
     if (video_state.texture != NULL) {
         SDL_DestroyTexture(video_state.texture);
@@ -239,17 +166,6 @@ static int init_mode(int new_mode, const char *paletname) {
     assert(video_state.texture);
 
     video_state.surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 8, SDL_PIXELFORMAT_ARGB32);
-
-    // if (draw_with_vircr_mode) {
-    //     if (pixel_multiplier > 1) {
-    //         vircr = (uint8_t *) walloc(w * h);
-    //     } else {
-    //         vircr = (uint8_t *) video_state.surface->pixels;
-    //     }
-    // }
-    /* else vircr is preallocated in init_video */
-    // vi = SDL_GetVideoInfo();
-    // video_state.haverealpalette = (vi->vfmt->palette != NULL);
 
     dksopen(paletname);
 
