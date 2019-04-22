@@ -181,7 +181,27 @@ void init_video(void) {
         atexit(SDL_Quit);
         video_state.init_done = 1;
 
+        Uint32 mode_flags = /*SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWPALETTE |*/ SDL_WINDOW_OPENGL;
+
+        // if (!draw_with_vircr_mode)
+        //     mode_flags |= SDL_ANYFORMAT;
+        // if (wantfullscreen)
+        //     mode_flags |= SDL_WINDOW_FULLSCREEN;
+
+        video_state.window = SDL_CreateWindow("Triplane Classic",
+                                SDL_WINDOWPOS_UNDEFINED,
+                                SDL_WINDOWPOS_UNDEFINED,
+                                1920,
+                                1080,
+                                mode_flags);
+        assert(video_state.window);
+
+        SDL_SetWindowResizable(video_state.window, SDL_TRUE);
+
         SDL_ShowCursor(SDL_DISABLE);
+
+        video_state.renderer = SDL_CreateRenderer(video_state.window, -1, 0);
+        assert(video_state.renderer);
 
         if (!draw_with_vircr_mode) {
             vircr = (unsigned char *) walloc(800 * 600);
@@ -190,20 +210,12 @@ void init_video(void) {
 }
 
 static int init_mode(int new_mode, const char *paletname) {
-    Uint32 mode_flags;
     // const SDL_VideoInfo *vi;
     int las, las2;
     int w = (new_mode == SVGA_MODE) ? 800 : 320;
     int h = (new_mode == SVGA_MODE) ? 600 : 200;
 
     init_video();
-
-    mode_flags = /*SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWPALETTE |*/ SDL_WINDOW_OPENGL;
-
-    // if (!draw_with_vircr_mode)
-    //     mode_flags |= SDL_ANYFORMAT;
-    // if (wantfullscreen)
-    //     mode_flags |= SDL_WINDOW_FULLSCREEN;
 
     if (draw_with_vircr_mode && pixel_multiplier > 1)
         wfree(vircr);
@@ -213,25 +225,14 @@ static int init_mode(int new_mode, const char *paletname) {
     int width = w * pixel_multiplier;
     int height = h * pixel_multiplier;
 
-    if (video_state.window == NULL) {
-        video_state.window = SDL_CreateWindow("Triplane Classic",
-                                SDL_WINDOWPOS_UNDEFINED,
-                                SDL_WINDOWPOS_UNDEFINED,
-                                1920,
-                                1080,
-                                mode_flags);
-        assert(video_state.window);
-
-        video_state.renderer = SDL_CreateRenderer(video_state.window, -1, 0);
-        assert(video_state.renderer);
-    }
-    else {
-        SDL_SetWindowSize(video_state.window, 1920, 1080);
-
+    if (video_state.texture != NULL) {
         SDL_DestroyTexture(video_state.texture);
         video_state.texture = NULL;
+    }
 
+    if (video_state.surface != NULL) {
         SDL_FreeSurface(video_state.surface);
+        video_state.surface = NULL;
     }
 
     video_state.texture = SDL_CreateTexture(video_state.renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, width, height);
