@@ -21,6 +21,7 @@
 #include <triplane.h>
 #include <SDL.h>
 #include <SDL_endian.h>
+#include "io/joystick.h"
 #include "io/sound.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -446,11 +447,10 @@ void swap_config_endianes(void) {
     config.unlimited_ammo = SDL_SwapLE32(config.unlimited_ammo);
     config.unlimited_gas = SDL_SwapLE32(config.unlimited_gas);
 
-    config.joystick[0] = SDL_SwapLE32(config.joystick[0]);
-    config.joystick_calibrated[0] = SDL_SwapLE32(config.joystick_calibrated[0]);
-
-    config.joystick[1] = SDL_SwapLE32(config.joystick[1]);
-    config.joystick_calibrated[1] = SDL_SwapLE32(config.joystick_calibrated[1]);
+    for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+        config.joystick[idx] = SDL_SwapLE32(config.joystick[idx]);
+        config.joystick_calibrated[idx] = SDL_SwapLE32(config.joystick_calibrated[idx]);
+    }
 }
 
 void load_config(void) {
@@ -501,11 +501,10 @@ void load_config(void) {
     config.unlimited_ammo = 0;
     config.unlimited_gas = 0;
 
-    config.joystick[0] = -1;
-    config.joystick_calibrated[0] = 0;
-
-    config.joystick[1] = -1;
-    config.joystick_calibrated[1] = 0;
+    for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+        config.joystick[idx] = -1;
+        config.joystick_calibrated[idx] = 0;
+    }
 
     faili = settings_open(CONFIGURATION_FILENAME, "rb");
 

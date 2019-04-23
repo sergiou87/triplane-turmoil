@@ -33,6 +33,8 @@
  */
 #define JOYSTICK_THRESHOLD_MULTIPLIER 0.8
 
+const int MAX_JOYSTICK_COUNT = 4;
+
 joystick_configuration joystick_config[4];
 
 SDL_GameController *joydev[4] = { NULL, NULL, NULL, NULL };
@@ -43,25 +45,25 @@ SDL_GameController *joydev[4] = { NULL, NULL, NULL, NULL };
 void init_joysticks(void) {
     /* set default config, used if the configuration file does not exist */
     joystick_config[0].up.type = 2;
-    joystick_config[0].up.n = 1;
+    joystick_config[0].up.n = SDL_CONTROLLER_AXIS_LEFTY;
     joystick_config[0].up.threshold = (Sint16) (32767 * JOYSTICK_THRESHOLD_MULTIPLIER);
     joystick_config[0].down.type = 2;
-    joystick_config[0].down.n = 1;
+    joystick_config[0].down.n = SDL_CONTROLLER_AXIS_LEFTY;
     joystick_config[0].down.threshold = (Sint16) (-32767 * JOYSTICK_THRESHOLD_MULTIPLIER);
-    joystick_config[0].power.type = 2;
-    joystick_config[0].power.n = 0;
-    joystick_config[0].power.threshold = (Sint16) (32767 * JOYSTICK_THRESHOLD_MULTIPLIER);
-    joystick_config[0].brake.type = 2;
-    joystick_config[0].brake.n = 0;
-    joystick_config[0].brake.threshold = (Sint16) (-32767 * JOYSTICK_THRESHOLD_MULTIPLIER);
+    joystick_config[0].power.type = 1;
+    joystick_config[0].power.n = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
+    joystick_config[0].power.threshold = 0;
+    joystick_config[0].brake.type = 1;
+    joystick_config[0].brake.n = SDL_CONTROLLER_BUTTON_B;
+    joystick_config[0].brake.threshold = 0;
     joystick_config[0].guns.type = 1;
-    joystick_config[0].guns.n = 0;
+    joystick_config[0].guns.n = SDL_CONTROLLER_BUTTON_X;
     joystick_config[0].guns.threshold = 0;
     joystick_config[0].bombs.type = 1;
-    joystick_config[0].bombs.n = 1;
+    joystick_config[0].bombs.n = SDL_CONTROLLER_BUTTON_A;
     joystick_config[0].bombs.threshold = 0;
-    joystick_config[0].roll.type = 0;
-    joystick_config[0].roll.n = 0;
+    joystick_config[0].roll.type = 1;
+    joystick_config[0].roll.n = SDL_CONTROLLER_BUTTON_Y;
     joystick_config[0].roll.threshold = 0;
     /*
      * use these for noautoroll:
@@ -119,26 +121,25 @@ void save_joysticks_data(const char *filename) {
  * @param joy1 = 1 if joystick 1 should be opened
  * @param joy2 = 1 if joystick 2 should be opened
  */
-void open_close_joysticks(int joy1, int joy2) {
+void open_joystick(int joy) {
     int joysticks_count = get_joysticks_count();
 
-    if (joysticks_count >= 1) {
-        if (!joy1 && joydev[0] != NULL) {
-            SDL_GameControllerClose(joydev[0]);
-            joydev[0] = NULL;
-        }
-        if (joy1 && joydev[0] == NULL) {
-            joydev[0] = SDL_GameControllerOpen(0);
-        }
-    }
-    if (joysticks_count >= 2) {
-        if (!joy2 && joydev[1] != NULL) {
-            SDL_GameControllerClose(joydev[1]);
-            joydev[1] = NULL;
-        }
-        if (joy2 && joydev[1] == NULL) {
-            joydev[1] = SDL_GameControllerOpen(1);
-        }
+    if (joy >= joysticks_count)
+        return;
+
+    if (joydev[joy] == NULL)
+        joydev[joy] = SDL_GameControllerOpen(0);
+}
+
+void close_joystick(int joy) {
+    int joysticks_count = get_joysticks_count();
+
+    if (joy >= joysticks_count)
+        return;
+
+    if (joydev[joy] != NULL) {
+        SDL_GameControllerClose(joydev[joy]);
+        joydev[joy] = NULL;
     }
 }
 
