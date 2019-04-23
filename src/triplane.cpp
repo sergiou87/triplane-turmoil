@@ -1629,7 +1629,12 @@ void main_engine(void) {
     }
     //// Open joysticks
     if (!playing_solo) {
-        open_close_joysticks(config.joystick[0] != -1, config.joystick[1] != -1);
+        for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+            if (config.joystick[idx] != -1)
+                open_joystick(idx);
+            else
+                close_joystick(idx);
+        }
     }
     //// Record
 
@@ -1868,7 +1873,9 @@ void main_engine(void) {
     mission_re_fly = -1;
 
     //// Close joysticks
-    open_close_joysticks(0, 0);
+        for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+            close_joystick(idx);
+        }
 
     //// Record
 
@@ -3621,14 +3628,22 @@ int main(int argc, char *argv[]) {
     loading_text("Initializing joystick data");
     init_joysticks();
 
-    if (config.joystick_calibrated[1] || config.joystick_calibrated[0]) {
-        if (!load_joysticks_data(CALIBRATION_FILENAME)) {
-            config.joystick_calibrated[0] = 0;
-            config.joystick[0] = -1;
-            config.joystick_calibrated[1] = 0;
-            config.joystick[1] = -1;
-            loading_text("Unable to load calibration data.");
+    bool anyJoystickCalibrated = false;
 
+    for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+        if (config.joystick_calibrated[idx]) {
+            anyJoystickCalibrated = true;
+            break;
+        }
+    }
+
+    if (anyJoystickCalibrated) {
+        if (!load_joysticks_data(CALIBRATION_FILENAME)) {
+            for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+                config.joystick_calibrated[idx] = 0;
+                config.joystick[idx] = -1;
+            }
+            loading_text("Unable to load calibration data.");
         }
     }
 

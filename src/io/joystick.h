@@ -33,13 +33,17 @@ struct joystick_configuration {
     /* if roll.type = 0, use autoroll */
     joystick_action up, down, roll, power, guns, bombs, brake;
 };
+
+extern const int MAX_JOYSTICK_COUNT;
+
 extern joystick_configuration joystick_config[4];
 
 void init_joysticks(void);
 int get_joysticks_count(void);
 int load_joysticks_data(const char *filename);
 void save_joysticks_data(const char *filename);
-void open_close_joysticks(int joy1, int joy2);
+void open_joystick(int joy);
+void close_joystick(int joy);
 int joystick_has_roll_button(int t);
 void get_joystick_action(int t, int inmenu, int *down, int *up, int *power, int *roll, int *guns, int *bombs);
 Sint16 *allocate_axis_state(int joy);

@@ -1997,10 +1997,12 @@ static void joystick_setup(int joy, Bitmap * controlme) {
         NULL, NULL}
     };
 
-    if (joy == 0)
-        open_close_joysticks(1, 0);
-    else
-        open_close_joysticks(0, 1);
+    for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+        if (idx == joy)
+            open_joystick(idx);
+        else
+            close_joystick(idx);
+    }
 
     idle = allocate_axis_state(joy);
     current = allocate_axis_state(joy);
@@ -2041,7 +2043,9 @@ static void joystick_setup(int joy, Bitmap * controlme) {
     wfree(idle);
     wfree(current);
 
-    open_close_joysticks(0, 0);
+    for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+        close_joystick(idx);
+    }
 }
 
 void controls_menu(void) {
@@ -2122,25 +2126,42 @@ void controls_menu(void) {
             menuselect = 7;
         }
 
-        if ((x >= 108 && x <= 212 && y >= 0 && y <= 87)) {
+        if ((x >= 108 && x <= 212 && y >= 0 && y <= 43)) {
             frost->printf(61, 97, "Select Joystick 1");
             menuselect = 8;
         }
 
-        if ((x >= 214 && x <= 318 && y >= 0 && y <= 87)) {
+        if ((x >= 214 && x <= 318 && y >= 0 && y <= 43)) {
             frost->printf(61, 97, "Select Joystick 2");
             menuselect = 9;
         }
 
+        if ((x >= 108 && x <= 212 && y >= 44 && y <= 87)) {
+            frost->printf(61, 97, "Select Joystick 3");
+            menuselect = 9;
+        }
 
-        if (config.joystick[0] != active && config.joystick[1] != active) {
+        if ((x >= 214 && x <= 318 && y >= 44 && y <= 87)) {
+            frost->printf(61, 97, "Select Joystick 4");
+            menuselect = 10;
+        }
+
+        int activeJoystick = -1;
+        for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+            if (config.joystick[idx] == active) {
+                activeJoystick = idx;
+                break;
+            }
+        }
+
+        if (activeJoystick == -1) {
             frost->printf(170, 93, "Up [%s] Down [%s] Roll [%s]",
                           name_for_key(player_keys[active].up).c_str(), name_for_key(player_keys[active].down).c_str(),
                           name_for_key(player_keys[active].roll).c_str());
             frost->printf(170, 100, "Power [%s] Bombs [%s] Guns [%s]", name_for_key(player_keys[active].power).c_str(),
                           name_for_key(player_keys[active].bombs).c_str(), name_for_key(player_keys[active].guns).c_str());
         } else {
-            int joy = (config.joystick[0] == active) ? 0 : 1;
+            int joy = activeJoystick;
             char *ups = get_joy_action_string(&joystick_config[joy].up);
             char *downs = get_joy_action_string(&joystick_config[joy].down);
             char *rolls = get_joy_action_string(&joystick_config[joy].roll);
@@ -2174,12 +2195,11 @@ void controls_menu(void) {
                 break;
 
             case 3:
-                if (config.joystick[0] == active)
-                    config.joystick[0] = -1;
 
-                if (config.joystick[1] == active)
-                    config.joystick[1] = -1;
-
+                for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+                    if (config.joystick[idx] == active)
+                        config.joystick[idx] = -1;
+                }
 
                 controlme->blit(0, 0);
                 napp[active]->blit((active % 2) * 27 + 10, (active / 2) * 23 + 22);
@@ -2227,26 +2247,28 @@ void controls_menu(void) {
                 break;
 
             case 8:
-                if (get_joysticks_count() >= 1) {
-                    config.joystick[0] = active;
-                    if (config.joystick[1] == active)
-                        config.joystick[1] = -1;
-                    joystick_setup(0, controlme);
+            case 9:
+            case 10:
+            case 11:
+                int joy = menuselect - 8;
+
+                if (get_joysticks_count() > joy) {
+                    config.joystick[joy] = active;
+
+                    for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+                        if (idx == joy)
+                            continue;
+
+                        if (config.joystick[idx] == active)
+                            config.joystick[idx] = -1;
+                    }
+
+                    joystick_setup(joy, controlme);
                     save_joysticks_data(CALIBRATION_FILENAME);
-                    config.joystick_calibrated[0] = 1;
+                    config.joystick_calibrated[joy] = 1;
                 }
                 break;
 
-            case 9:
-                if (get_joysticks_count() >= 2) {
-                    config.joystick[1] = active;
-                    if (config.joystick[0] == active)
-                        config.joystick[0] = -1;
-                    joystick_setup(1, controlme);
-                    save_joysticks_data(CALIBRATION_FILENAME);
-                    config.joystick_calibrated[1] = 1;
-                }
-                break;
             }
 
             if (menuselect >= 4 && menuselect <= 7) {
