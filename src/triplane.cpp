@@ -1094,24 +1094,16 @@ void controls(void) {
         if (l > 3)
             continue;
 
+        bool playerControlsHandled = false;
 
-        if (!playing_solo && config.joystick[0] == l) {
-            get_joystick_action(0, (hangarmenu_active[l] || in_closing[l]),
-                                &new_mc_down[l], &new_mc_up[l], &new_mc_power[l], &new_mc_roll[l], &new_mc_guns[l], &new_mc_bomb[l]);
-            if (!joystick_has_roll_button(0) && !(hangarmenu_active[l] || in_closing[l])) {
-                // Autoroll code
-                new_mc_roll[l] = 0;
-                if (new_mc_down[l] == new_mc_up[l])     /* not turning up/down */
-                    if ((player_upsidedown[l] && (player_angle[l] < 23040 || player_angle[l] > 69120)) ||
-                        (!player_upsidedown[l] && (player_angle[l] < 69120 && player_angle[l] > 23040)))
-                        if (!player_rolling[l])
-                            new_mc_roll[l] = 1;
-            }
-        } else {
-            if (!playing_solo && config.joystick[1] == l) {
-                get_joystick_action(1, (hangarmenu_active[l] || in_closing[l]),
+        if (!playing_solo) {
+            for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+                if (config.joystick[idx] != l)
+                    continue;
+
+                get_joystick_action(idx, (hangarmenu_active[l] || in_closing[l]),
                                     &new_mc_down[l], &new_mc_up[l], &new_mc_power[l], &new_mc_roll[l], &new_mc_guns[l], &new_mc_bomb[l]);
-                if (!joystick_has_roll_button(1) && !(hangarmenu_active[l] || in_closing[l])) {
+                if (!joystick_has_roll_button(idx) && !(hangarmenu_active[l] || in_closing[l])) {
                     // Autoroll code
                     new_mc_roll[l] = 0;
                     if (new_mc_down[l] == new_mc_up[l]) /* not turning up/down */
@@ -1120,69 +1112,70 @@ void controls(void) {
                             if (!player_rolling[l])
                                 new_mc_roll[l] = 1;
                 }
-            } else {
-                if ((playing_solo ? key[roster[config.player_number[solo_country]].down] : key[player_keys[l].down]))
-                    new_mc_down[l] = 1;
-                else
-                    new_mc_down[l] = 0;
 
-                if ((playing_solo ? key[roster[config.player_number[solo_country]].up] : key[player_keys[l].up]))
-                    new_mc_up[l] = 1;
-                else
-                    new_mc_up[l] = 0;
+                playerControlsHandled = true;
+                break;
+            }
+        }
 
-                if (!power_on_off) {
-                    if (!power_reverse) {
-                        if ((playing_solo ? key[roster[config.player_number[solo_country]].power] : key[player_keys[l].power]))
-                            new_mc_power[l] = 1;
-                        else
-                            new_mc_power[l] = 0;
-                    } else {
-                        if ((playing_solo ? key[roster[config.player_number[solo_country]].power] : key[player_keys[l].power]))
+        if (!playerControlsHandled) {
+            if ((playing_solo ? key[roster[config.player_number[solo_country]].down] : key[player_keys[l].down]))
+                new_mc_down[l] = 0;
+            else
+                new_mc_down[l] = 0;
+
+            if ((playing_solo ? key[roster[config.player_number[solo_country]].up] : key[player_keys[l].up]))
+                new_mc_up[l] = 1;
+            else
+                new_mc_up[l] = 0;
+
+            if (!power_on_off) {
+                if (!power_reverse) {
+                    if ((playing_solo ? key[roster[config.player_number[solo_country]].power] : key[player_keys[l].power]))
+                        new_mc_power[l] = 1;
+                    else
+                        new_mc_power[l] = 0;
+                }
+                else {
+                    if ((playing_solo ? key[roster[config.player_number[solo_country]].power] : key[player_keys[l].power]))
+                        new_mc_power[l] = 0;
+                    else
+                        new_mc_power[l] = 1;
+                }
+            }
+            else {
+                if ((playing_solo ? key[roster[config.player_number[solo_country]].power] : key[player_keys[l].power])) {
+                    if (!controls_power2[l]) {
+                        if (new_mc_power[l])
                             new_mc_power[l] = 0;
                         else
                             new_mc_power[l] = 1;
                     }
-                } else {
-                    if ((playing_solo ? key[roster[config.player_number[solo_country]].power] : key[player_keys[l].power])) {
-                        if (!controls_power2[l]) {
-                            if (new_mc_power[l])
-                                new_mc_power[l] = 0;
-                            else
-                                new_mc_power[l] = 1;
-                        }
-                        controls_power2[l] = 1;
-
-                    } else
-                        controls_power2[l] = 0;
-
-                    if (in_closing[l])
-                        new_mc_power[l] = 0;
-
+                    controls_power2[l] = 1;
                 }
+                else
+                    controls_power2[l] = 0;
 
-                new_mc_bomb[l] = 0;
+                if (in_closing[l])
+                    new_mc_power[l] = 0;
+            }
 
-                if ((playing_solo ? key[roster[config.player_number[solo_country]].bombs] : key[player_keys[l].bombs])) {
-                    new_mc_bomb[l] = 1;
+            new_mc_bomb[l] = 0;
 
-                }
+            if ((playing_solo ? key[roster[config.player_number[solo_country]].bombs] : key[player_keys[l].bombs])) {
+                new_mc_bomb[l] = 1;
+            }
 
-                new_mc_roll[l] = 0;
-                if ((playing_solo ? key[roster[config.player_number[solo_country]].roll] : key[player_keys[l].roll])) {
+            new_mc_roll[l] = 0;
+            if ((playing_solo ? key[roster[config.player_number[solo_country]].roll] : key[player_keys[l].roll])) {
 
-                    new_mc_roll[l] = 1;
+                new_mc_roll[l] = 1;
+            }
 
+            new_mc_guns[l] = 0;
 
-                }
-
-
-                new_mc_guns[l] = 0;
-
-                if ((playing_solo ? key[roster[config.player_number[solo_country]].guns] : key[player_keys[l].guns])) {
-                    new_mc_guns[l] = 1;
-
-                }
+            if ((playing_solo ? key[roster[config.player_number[solo_country]].guns] : key[player_keys[l].guns])) {
+                new_mc_guns[l] = 1;
             }
         }
 

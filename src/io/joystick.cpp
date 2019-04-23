@@ -47,9 +47,11 @@ void init_joysticks(void) {
     joystick_config[0].up.type = 2;
     joystick_config[0].up.n = SDL_CONTROLLER_AXIS_LEFTY;
     joystick_config[0].up.threshold = (Sint16) (32767 * JOYSTICK_THRESHOLD_MULTIPLIER);
+    joystick_config[0].up.threshold_dir = 0;
     joystick_config[0].down.type = 2;
     joystick_config[0].down.n = SDL_CONTROLLER_AXIS_LEFTY;
     joystick_config[0].down.threshold = (Sint16) (-32767 * JOYSTICK_THRESHOLD_MULTIPLIER);
+    joystick_config[0].down.threshold_dir = 1;
     joystick_config[0].power.type = 1;
     joystick_config[0].power.n = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
     joystick_config[0].power.threshold = 0;
@@ -98,7 +100,7 @@ int load_joysticks_data(const char *filename) {
     fp = settings_open(filename, "rb");
 
     if (fp != NULL) {
-        fread(&joystick_config, sizeof(joystick_configuration), 2, fp);
+        fread(&joystick_config, sizeof(joystick_configuration), MAX_JOYSTICK_COUNT, fp);
         fclose(fp);
         return 1;
     }
@@ -112,7 +114,7 @@ int load_joysticks_data(const char *filename) {
 
 void save_joysticks_data(const char *filename) {
     FILE *fp = settings_open(filename, "wb");
-    fwrite(&joystick_config, sizeof(joystick_configuration), 2, fp);
+    fwrite(&joystick_config, sizeof(joystick_configuration), MAX_JOYSTICK_COUNT, fp);
     fclose(fp);
 }
 
