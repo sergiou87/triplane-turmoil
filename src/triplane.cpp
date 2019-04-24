@@ -1120,7 +1120,7 @@ void controls(void) {
 
         if (!playerControlsHandled) {
             if ((playing_solo ? key[roster[config.player_number[solo_country]].down] : key[player_keys[l].down]))
-                new_mc_down[l] = 0;
+                new_mc_down[l] = 1;
             else
                 new_mc_down[l] = 0;
 
