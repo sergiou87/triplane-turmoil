@@ -46,18 +46,12 @@ int all_bitmaps_n = 0;
 unsigned char *pointti;
 
 static void all_bitmaps_add(Bitmap * b) {
-    if (draw_with_vircr_mode)
-        return;
-
     assert(all_bitmaps_n < MAX_BITMAPS);
     all_bitmaps[all_bitmaps_n++] = b;
 }
 
 static void all_bitmaps_delete(Bitmap * b) {
     int i;
-
-    if (draw_with_vircr_mode)
-        return;
 
     for (i = 0; i < all_bitmaps_n; i++)
         if (all_bitmaps[i] == b)
@@ -68,9 +62,6 @@ static void all_bitmaps_delete(Bitmap * b) {
 
 void all_bitmaps_refresh(void) {
     int i;
-
-    if (draw_with_vircr_mode)
-        return;
 
     for (i = 0; i < all_bitmaps_n; i++)
         all_bitmaps[i]->refresh_sdlsurface();
@@ -83,9 +74,6 @@ void Bitmap::refresh_sdlsurface() {
         SDL_FreeSurface(sdlsurface);
         sdlsurface = NULL;
     }
-
-    if (draw_with_vircr_mode)
-        return;                 /* sdlsurfaces are not used */
 
     tmps = SDL_CreateRGBSurfaceFrom(image_data, width, height, 8, width, 0, 0, 0, 0);
 
@@ -205,8 +193,7 @@ void Bitmap::blit_fullscreen(void) {
     if (update_vircr_mode)
         memcpy(vircr, image_data, 320 * 200);
 
-    // if (!draw_with_vircr_mode)
-        SDL_BlitSurface(sdlsurface, NULL, video_state.surface, NULL);
+    SDL_BlitSurface(sdlsurface, NULL, video_state.surface, NULL);
 }
 
 /*
@@ -267,20 +254,18 @@ void Bitmap::blit(int xx, int yy, int rx, int ry, int rx2, int ry2) {
         }
     }
 
-    if (!draw_with_vircr_mode) {
-        clip.x = rx;
-        clip.y = ry;
-        clip.w = rx2 - rx + 1;
-        clip.h = ry2 - ry + 1;
-        pos.x = xx;
-        pos.y = yy;
-        SDL_SetClipRect(video_state.surface, &clip);
-        if (SDL_BlitSurface(sdlsurface, NULL, video_state.surface, &pos) != 0) {
-            fprintf(stderr, "SDL_BlitSurface: %s\n", SDL_GetError());
-            exit(1);
-        }
-        SDL_SetClipRect(video_state.surface, NULL);
+    clip.x = rx;
+    clip.y = ry;
+    clip.w = rx2 - rx + 1;
+    clip.h = ry2 - ry + 1;
+    pos.x = xx;
+    pos.y = yy;
+    SDL_SetClipRect(video_state.surface, &clip);
+    if (SDL_BlitSurface(sdlsurface, NULL, video_state.surface, &pos) != 0) {
+        fprintf(stderr, "SDL_BlitSurface: %s\n", SDL_GetError());
+        exit(1);
     }
+    SDL_SetClipRect(video_state.surface, NULL);
 }
 
 unsigned char *Bitmap::info(int *width, int *height) {
