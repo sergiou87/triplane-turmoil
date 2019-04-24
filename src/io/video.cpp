@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-struct video_state_t video_state = { NULL, NULL, NULL, NULL, 0 };
+struct video_state_t video_state = { 0, 0, NULL, NULL, NULL, NULL, 0 };
 
 struct naytto ruutu;
 
@@ -92,7 +92,28 @@ void do_all(int do_retrace) {
     SDL_UpdateTexture(video_state.texture, NULL, video_state.surface->pixels, video_state.surface->w * sizeof (Uint32));
 
     SDL_RenderClear(video_state.renderer);
-    SDL_RenderCopy(video_state.renderer, video_state.texture, NULL, NULL);
+
+    int windowWidth, windowHeight;
+    SDL_GetRendererOutputSize(video_state.renderer, &windowWidth, &windowHeight);
+    float textureAspectRatio = (float)video_state.w / video_state.h;
+    float screenAspectRatio = (float)windowWidth / windowHeight;
+
+    SDL_Rect dstRect;
+
+    if (textureAspectRatio > screenAspectRatio) {
+        dstRect.x = 0;
+        dstRect.w = windowWidth;
+        dstRect.h = dstRect.w / textureAspectRatio;
+        dstRect.y = (windowHeight - dstRect.h) >> 1;
+    }
+    else {
+        dstRect.y = 0;
+        dstRect.h = windowHeight;
+        dstRect.w = dstRect.h * textureAspectRatio;
+        dstRect.x = (windowWidth - dstRect.w) >> 1;
+    }
+
+    SDL_RenderCopy(video_state.renderer, video_state.texture, NULL, &dstRect);
     SDL_RenderPresent(video_state.renderer);
 }
 
@@ -151,6 +172,9 @@ static int init_mode(int new_mode, const char *paletname) {
 
     int width = w;
     int height = h;
+
+    video_state.w = w;
+    video_state.h = h;
 
     if (video_state.texture != NULL) {
         SDL_DestroyTexture(video_state.texture);
