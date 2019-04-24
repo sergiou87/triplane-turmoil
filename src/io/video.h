@@ -58,7 +58,6 @@ extern unsigned char *vircr;
 extern Bitmap *standard_background;
 extern int current_mode;
 extern int update_vircr_mode;
-extern int draw_with_vircr_mode;
 extern int wantfullscreen;
 
 #endif

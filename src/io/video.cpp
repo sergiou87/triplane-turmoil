@@ -33,7 +33,6 @@ struct naytto ruutu;
 int current_mode = VGA_MODE;
 unsigned char *vircr;
 int update_vircr_mode = 1;
-int draw_with_vircr_mode = 0;
 int wantfullscreen = 1;
 
 SDL_Color curpal[256];
@@ -63,11 +62,6 @@ void setpal_range(const char pal[][3], int firstcolor, int n, int reverse) {
     }
 
     SDL_SetPaletteColors(video_state.surface->format->palette, cc, firstcolor, n);
-    // if (draw_with_vircr_mode) {
-    //     SDL_SetPalette(video_state.surface, video_state.haverealpalette ? SDL_PHYSPAL : SDL_LOGPAL, cc, firstcolor, n);
-    // } else {
-    //     SDL_SetPalette(video_state.surface, SDL_PHYSPAL | SDL_LOGPAL, cc, firstcolor, n);
-    // }
     memcpy(&curpal[firstcolor], cc, n * sizeof(SDL_Color));
     wfree(cc);
 }
@@ -158,9 +152,7 @@ void init_video(void) {
         video_state.renderer = SDL_CreateRenderer(video_state.window, -1, 0);
         assert(video_state.renderer);
 
-        if (!draw_with_vircr_mode) {
-            vircr = (unsigned char *) walloc(800 * 600);
-        }
+        vircr = (unsigned char *) walloc(800 * 600);
     }
 }
 

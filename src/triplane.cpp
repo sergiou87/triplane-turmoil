@@ -1651,8 +1651,7 @@ void main_engine(void) {
     //// Record
     setwrandom(7);
 
-    if (!draw_with_vircr_mode)
-        update_vircr_mode = 0;
+    update_vircr_mode = 0;
 
     while (flag) {
         update_key_state();
@@ -1859,8 +1858,7 @@ void main_engine(void) {
         }
     }
 
-    if (!draw_with_vircr_mode)
-        update_vircr_mode = 1;
+    update_vircr_mode = 1;
 
     wait_release();
     mission_re_fly = -1;
@@ -3563,10 +3561,6 @@ void handle_parameters(void) {
     if (findparameter("-nofullscreen")) {
         wantfullscreen = 0;
     }
-
-    if (findparameter("-sdldraw")) {
-        draw_with_vircr_mode = 0;
-    }
 }
 
 int main(int argc, char *argv[]) {
@@ -3615,7 +3609,6 @@ int main(int argc, char *argv[]) {
     handle_parameters();
 
     /* needed to find joysticks */
-    /* needs draw_with_vircr_mode parameter from handle_parameters() */
     init_video();
 
     loading_text("Initializing joystick data");
