@@ -134,18 +134,20 @@ void init_video(void) {
         atexit(SDL_Quit);
         video_state.init_done = 1;
 
-        Uint32 mode_flags = /*SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWPALETTE |*/ SDL_WINDOW_OPENGL;
+        Uint32 mode_flags = SDL_WINDOW_OPENGL;
 
-        // if (!draw_with_vircr_mode)
-        //     mode_flags |= SDL_ANYFORMAT;
-        // if (wantfullscreen)
-        //     mode_flags |= SDL_WINDOW_FULLSCREEN;
+        int windowWidth = 1920, windowHeight = 1080;
+
+        if (wantfullscreen) {
+            mode_flags |= SDL_WINDOW_FULLSCREEN;
+            windowWidth = windowHeight = 0;
+        }
 
         video_state.window = SDL_CreateWindow("Triplane Classic",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
-                                1920,
-                                1080,
+                                windowWidth,
+                                windowHeight,
                                 mode_flags);
         assert(video_state.window);
 
