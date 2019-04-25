@@ -77,7 +77,11 @@ static void find_settings_directory(char *dir) {
         strncat(dir, "/.triplane", FILENAME_MAX - 1);
         ret = stat(dir, &st);
         if (ret) {
-            ret = mkdir(dir);//, 0755);
+#if (defined(_WIN32) || defined(__WIN32__))
+            ret = mkdir(dir);
+#else
+            ret = mkdir(dir, 0755);
+#endif
             if (ret) {
                 fprintf(stderr, "Failed to create settings directory \"%s\".\n", dir);
                 exit(1);
