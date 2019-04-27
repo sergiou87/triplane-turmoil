@@ -27,7 +27,9 @@
 
 #include "io/mouse.h"
 #include "io/video.h"
+#include "io/joystick.h"
 #include <SDL.h>
+#include <sys/param.h>
 
 void hiiri_to(int x, int y) {
     int windowWidth, windowHeight;
@@ -51,6 +53,39 @@ void koords(int *x, int *y, int *n1, int *n2) {
 
     int windowWidth, windowHeight;
     SDL_GetWindowSize(video_state.window, &windowWidth, &windowHeight);
+
+    // Use the first joystick to emulate a mouse (for devices without mouse
+    // and with joysticks, like Nintendo Switch)
+    //
+    if (get_joysticks_count() > 0) {
+        int joyX = 0, joyY = 0, joyN1 = 0, joyN2 = 0;
+        joystick_emulate_mouse(&joyX, &joyY, &joyN1, &joyN2);
+
+        *n1 = (*n1 || joyN1);
+        *n2 = (*n2 || joyN2);
+
+        int speed = windowWidth * 25 / 1280;
+
+        if (joyX > 0) {
+            mouseX += speed;
+        }
+        else if (joyX < 0) {
+            mouseX -= speed;
+        }
+
+        if (joyY > 0) {
+            mouseY += speed;
+        }
+        else if (joyY < 0) {
+            mouseY -= speed;
+        }
+
+        mouseX = MAX(0, MIN(mouseX, windowWidth));
+        mouseY = MAX(0, MIN(mouseY, windowHeight));
+
+        // Correct mouse position for future events
+        SDL_WarpMouseInWindow(video_state.window, mouseX, mouseY);
+    }
 
     *x = mouseX * video_state.surface->w / windowWidth;
     *y = mouseY * video_state.surface->h / windowHeight;
