@@ -247,7 +247,7 @@ void sdl_free_mod_file(sb_mod_file * mod) {
 void sdl_play_music(sb_mod_file * mod) {
 #ifdef HAVE_SDL_MIXER
     sdl_stop_all_samples();
-    Mix_PlayMusic(mod->music, 1);
+    Mix_PlayMusic(mod->music, -1);
 #endif
 }
 
