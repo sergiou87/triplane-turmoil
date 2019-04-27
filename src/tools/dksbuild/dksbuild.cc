@@ -27,6 +27,7 @@
 
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
@@ -37,8 +38,8 @@
 struct main_directory_entry {
 
 	 char nimi[7];
-	 unsigned long int offset;
-	 unsigned long int koko;
+	 uint32_t offset;
+	 uint32_t koko;
 };
 #pragma pack()
 
@@ -46,7 +47,7 @@ struct buildaus_info {
 
 	 char nimi[7];
 	 char tiedosto[80];
-	 unsigned long int koko;
+	 uint32_t koko;
 };
 
 int filelength(FILE *faili)

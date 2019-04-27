@@ -27,6 +27,7 @@
 
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -46,8 +47,8 @@
 #pragma pack(1)
 struct main_directory_entry {
     char nimi[7];
-    unsigned long int offset __attribute__ ((packed));
-    unsigned long int koko __attribute__ ((packed));
+    uint32_t offset __attribute__ ((packed));
+    uint32_t koko __attribute__ ((packed));
 };
 
 #pragma pack()
