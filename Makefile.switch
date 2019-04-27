@@ -42,7 +42,7 @@ BUILD		:=	build
 SOURCES		:=	src src/gfx src/io src/menus src/tools src/util src/world
 DATA		:=	bindata
 INCLUDES	:=	src
-ROMFS	:=	romfs
+#ROMFS	:=	romfs
 
 VERSION      = 1.0.9
 
@@ -167,14 +167,12 @@ endif
 all: $(BUILD)
 
 $(BUILD):
-	mkdir -p romfs/triplane/ && cp fokker.dks romfs/triplane/fokker.dks
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.switch
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	make clean
 ifeq ($(strip $(APP_JSON)),)
 	@rm -fr $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf
 else
