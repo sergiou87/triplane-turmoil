@@ -54,5 +54,7 @@ void set_disabled_action(struct joystick_action *act);
 char *get_joy_action_string(struct joystick_action *act);
 
 void joystick_emulate_mouse(float *x, float *y, int *n1, int *n2);
+int joystick_emulate_escape(void);
+int joystick_emulate_f1(void);
 
 #endif
