@@ -53,6 +53,6 @@ int find_changed_button(struct joystick_action *act, int joy);
 void set_disabled_action(struct joystick_action *act);
 char *get_joy_action_string(struct joystick_action *act);
 
-void joystick_emulate_mouse(int *x, int *y, int *n1, int *n2);
+void joystick_emulate_mouse(float *x, float *y, int *n1, int *n2);
 
 #endif

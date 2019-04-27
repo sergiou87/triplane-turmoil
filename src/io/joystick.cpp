@@ -265,7 +265,7 @@ char *get_joy_action_string(struct joystick_action *act) {
     return buf;
 }
 
-void joystick_emulate_mouse(int *x, int *y, int *n1, int *n2) {
+void joystick_emulate_mouse(float *x, float *y, int *n1, int *n2) {
     if (get_joysticks_count() == 0) {
         return;
     }
@@ -282,20 +282,19 @@ void joystick_emulate_mouse(int *x, int *y, int *n1, int *n2) {
     Uint8 aButton = SDL_GameControllerGetButton(joydev[0], SDL_CONTROLLER_BUTTON_A);
     Uint8 bButton = SDL_GameControllerGetButton(joydev[0], SDL_CONTROLLER_BUTTON_B);
 
-    static const Sint16 JOYSTICK_MOUSE_THRESHOLD = 16384;
+    static const Sint16 JOYSTICK_MOUSE_THRESHOLD = 8192;
 
-    if (xAxis > JOYSTICK_MOUSE_THRESHOLD)
-        *x = 1;
-    else if (xAxis < -JOYSTICK_MOUSE_THRESHOLD)
-        *x = -1;
-    else 
+    *x = fabsf(xAxis) * 8.0 / SDL_MAX_SINT16 + 1.0;
+    *y = fabsf(yAxis) * 8.0 / SDL_MAX_SINT16 + 1.0;
+
+    if (xAxis < 0)
+        *x = -*x;
+    if (yAxis < 0)
+        *y = -*y;
+
+    if (abs(xAxis) < JOYSTICK_MOUSE_THRESHOLD)
         *x = 0;
-
-    if (yAxis > JOYSTICK_MOUSE_THRESHOLD)
-        *y = 1;
-    else if (yAxis < -JOYSTICK_MOUSE_THRESHOLD)
-        *y = -1;
-    else 
+    if (abs(yAxis) < JOYSTICK_MOUSE_THRESHOLD)
         *y = 0;
 
     *n1 = aButton;
