@@ -3564,6 +3564,11 @@ void handle_parameters(void) {
     if (findparameter("-nofullscreen")) {
         wantfullscreen = 0;
     }
+
+// On Switch let always SDL handle the viewport (which you do by not enabling fullscreen)
+#ifdef __SWITCH__
+    wantfullscreen = 0;
+#endif
 }
 
 int main(int argc, char *argv[]) {
