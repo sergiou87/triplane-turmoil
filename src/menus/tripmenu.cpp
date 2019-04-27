@@ -795,6 +795,13 @@ void roster_menu(void) {
 
         }
 
+        if (joystick_emulate_f1()) {
+            wtoggle(&help_on);
+        }
+        else if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
 
         if (number != -1) {
@@ -1178,6 +1185,10 @@ void options_menu(void) {
         if (kbhit())
             if (getch() == 27)
                 exit_flag = 1;
+        
+        if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
 
         koords(&x, &y, &n1, &n2);
         optionme->blit(0, 0);
@@ -1919,6 +1930,10 @@ void transfer_menu(void) {
             if (getch() == 27)
                 exit_flag = 1;
 
+        if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
         optionme->blit(0, 0);
 
@@ -2081,6 +2096,14 @@ void controls_menu(void) {
             }
 
         }
+
+        if (joystick_emulate_f1()) {
+            wtoggle(&help_on);
+        }
+        else if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
 
         koords(&x, &y, &n1, &n2);
         controlme->blit(0, 0);
@@ -2336,6 +2359,13 @@ void assign_menu(void) {
                     exit_flag = 1;
             }
 
+        }
+
+        if (joystick_emulate_f1()) {
+            wtoggle(&help_on);
+        }
+        else if (joystick_emulate_escape()) {
+            exit_flag = 1;
         }
 
         koords(&x, &y, &n1, &n2);
@@ -2643,6 +2673,13 @@ void aces_menu(void) {
 
         }
 
+        if (joystick_emulate_f1()) {
+            wtoggle(&help_on);
+        }
+        else if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
 
         if (!current_page)
@@ -2808,6 +2845,10 @@ int kangas_menu(void) {
             exit_flag = 1;
         }
 
+        if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
         kangas->blit_fullscreen();
         kangas_terrain_to_screen(place_x);
@@ -2945,6 +2986,10 @@ void credits_menu(void) {
             exit_flag = 1;
         }
 
+        if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
         credi1->blit(0, 0);
 
@@ -3023,6 +3068,10 @@ void letter_menu(void) {
             exit_flag = 1;
         }
 
+        if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
         letter->blit(0, 0);
         medal1->blit(15, 80);
@@ -3096,9 +3145,21 @@ void main_menu(void) {
             }
         }
 
+        if (joystick_emulate_f1()) {
+            wtoggle(&help_on);
+        }
+        else if (joystick_emulate_escape()) {
+            exit_flag = 1;
+        }
+
         koords(&x, &y, &n1, &n2);
         menu1->blit(0, 0);      // 0,0,799,599
+
+#ifdef __SWITCH__
+        grid2->printf(34, 156, "Press +\nfor Help");
+#else
         grid2->printf(34, 156, "Press F1\nfor Help");
+#endif
 
         for (l = 0; l < 4; l++)
             if (config.player_type[l] == 1)

@@ -300,3 +300,33 @@ void joystick_emulate_mouse(float *x, float *y, int *n1, int *n2) {
     *n1 = aButton;
     *n2 = bButton;
 }
+
+int joystick_check_key_until_released(SDL_GameControllerButton key) {
+    if (get_joysticks_count() == 0) {
+        return 0;
+    }
+
+    open_joystick(0);
+
+    if (joydev[0] == NULL) {
+        return 0;
+    }
+
+    if (!SDL_GameControllerGetButton(joydev[0], key)) {
+        return 0;
+    }
+
+    while (SDL_GameControllerGetButton(joydev[0], key)) {
+        SDL_PumpEvents();
+    }
+
+    return 1;
+}
+
+int joystick_emulate_escape(void) {
+    return joystick_check_key_until_released(SDL_CONTROLLER_BUTTON_BACK);
+}
+
+int joystick_emulate_f1(void) {
+    return joystick_check_key_until_released(SDL_CONTROLLER_BUTTON_START);
+}

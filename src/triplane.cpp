@@ -1720,7 +1720,7 @@ void main_engine(void) {
             }
         }
 
-        if (key[SDL_SCANCODE_ESCAPE]) {
+        if (key[SDL_SCANCODE_ESCAPE] || joystick_emulate_escape()) {
             flag = 0;
             mission_interrupted = 1;
         }
