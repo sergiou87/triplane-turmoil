@@ -2255,6 +2255,7 @@ void controls_menu(void) {
                 if (get_joysticks_count() > joy) {
                     config.joystick[joy] = active;
 
+                    // Disable any other joystick previously assigned to the active player
                     for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
                         if (idx == joy)
                             continue;

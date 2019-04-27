@@ -31,7 +31,12 @@
 #include "settings.h"
 
 #define DKS_FILENAME "fokker.dks"
+
+#ifdef __SWITCH__
+#define CALIBRATION_FILENAME "/triplane/joystic.dta"
+#else
 #define CALIBRATION_FILENAME "joystic.dta"
+#endif
 
 //\ Picturedata
 
