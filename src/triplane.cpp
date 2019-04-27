@@ -3637,8 +3637,13 @@ int main(int argc, char *argv[]) {
     if (anyJoystickCalibrated) {
         if (!load_joysticks_data(CALIBRATION_FILENAME)) {
             for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
+#ifdef __SWITCH__                
+                config.joystick_calibrated[idx] = 1;
+                config.joystick[idx] = idx;
+#else
                 config.joystick_calibrated[idx] = 0;
                 config.joystick[idx] = -1;
+#endif
             }
             loading_text("Unable to load calibration data.");
         }
