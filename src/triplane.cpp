@@ -1104,8 +1104,10 @@ void controls(void) {
                 if (config.joystick[idx] != l)
                     continue;
 
+                int joyPower = 0;
+
                 get_joystick_action(idx, (hangarmenu_active[l] || in_closing[l]),
-                                    &new_mc_down[l], &new_mc_up[l], &new_mc_power[l], &new_mc_roll[l], &new_mc_guns[l], &new_mc_bomb[l]);
+                                    &new_mc_down[l], &new_mc_up[l], &joyPower, &new_mc_roll[l], &new_mc_guns[l], &new_mc_bomb[l]);
                 if (!joystick_has_roll_button(idx) && !(hangarmenu_active[l] || in_closing[l])) {
                     // Autoroll code
                     new_mc_roll[l] = 0;
@@ -1114,6 +1116,31 @@ void controls(void) {
                             (!player_upsidedown[l] && (player_angle[l] < 69120 && player_angle[l] > 23040)))
                             if (!player_rolling[l])
                                 new_mc_roll[l] = 1;
+                }
+
+                if (!power_on_off) {
+                    if (!power_reverse) {
+                        new_mc_power[l] = joyPower;
+                    }
+                    else {
+                        new_mc_power[l] = !joyPower;
+                    }
+                }
+                else {
+                    if (joyPower) {
+                        if (!controls_power2[l]) {
+                            if (new_mc_power[l])
+                                new_mc_power[l] = 0;
+                            else
+                                new_mc_power[l] = 1;
+                        }
+                        controls_power2[l] = 1;
+                    }
+                    else
+                        controls_power2[l] = 0;
+
+                    if (in_closing[l])
+                        new_mc_power[l] = 0;
                 }
 
                 playerControlsHandled = true;
