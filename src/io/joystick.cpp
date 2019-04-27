@@ -264,3 +264,40 @@ char *get_joy_action_string(struct joystick_action *act) {
     }
     return buf;
 }
+
+void joystick_emulate_mouse(int *x, int *y, int *n1, int *n2) {
+    if (get_joysticks_count() == 0) {
+        return;
+    }
+
+    open_joystick(0);
+
+    if (joydev[0] == NULL) {
+        return;
+    }
+
+    Sint16 yAxis = SDL_GameControllerGetAxis(joydev[0], SDL_CONTROLLER_AXIS_LEFTY);
+    Sint16 xAxis = SDL_GameControllerGetAxis(joydev[0], SDL_CONTROLLER_AXIS_LEFTX);
+
+    Uint8 aButton = SDL_GameControllerGetButton(joydev[0], SDL_CONTROLLER_BUTTON_A);
+    Uint8 bButton = SDL_GameControllerGetButton(joydev[0], SDL_CONTROLLER_BUTTON_B);
+
+    static const Sint16 JOYSTICK_MOUSE_THRESHOLD = 16384;
+
+    if (xAxis > JOYSTICK_MOUSE_THRESHOLD)
+        *x = 1;
+    else if (xAxis < -JOYSTICK_MOUSE_THRESHOLD)
+        *x = -1;
+    else 
+        *x = 0;
+
+    if (yAxis > JOYSTICK_MOUSE_THRESHOLD)
+        *y = 1;
+    else if (yAxis < -JOYSTICK_MOUSE_THRESHOLD)
+        *y = -1;
+    else 
+        *y = 0;
+
+    *n1 = aButton;
+    *n2 = bButton;
+}
