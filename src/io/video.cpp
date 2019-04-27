@@ -125,7 +125,7 @@ void init_video(void) {
             exit(1);
         }
         signal(SIGINT, sigint_handler);
-        atexit(SDL_Quit);
+
         video_state.init_done = 1;
 
         Uint32 mode_flags = SDL_WINDOW_OPENGL;
@@ -154,6 +154,16 @@ void init_video(void) {
 
         vircr = (unsigned char *) walloc(800 * 600);
     }
+}
+
+void destroy_video(void) {
+    if (video_state.renderer != NULL)
+        SDL_DestroyRenderer(video_state.renderer);
+    
+    if (video_state.window != NULL)
+        SDL_DestroyWindow(video_state.window);
+    
+    SDL_Quit();
 }
 
 static int init_mode(int new_mode, const char *paletname) {

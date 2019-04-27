@@ -3835,6 +3835,8 @@ int main(int argc, char *argv[]) {
 
     clean_memory();
 
+    destroy_video();
+
     return 0;
 }
 

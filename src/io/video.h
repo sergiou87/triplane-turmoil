@@ -53,6 +53,7 @@ void do_all(int do_retrace = 0);
 int init_vesa(const char *paletname);
 void init_vga(const char *paletname);
 void init_video(void);
+void destroy_video(void);
 
 extern unsigned char *vircr;
 extern Bitmap *standard_background;
