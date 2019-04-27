@@ -35,6 +35,7 @@ struct naytto {
 extern naytto ruutu;
 
 struct video_state_t {
+    int viewportX, viewportY, viewportWidth, viewportHeight;
     int w, h;
     SDL_Window *window;
     SDL_Renderer *renderer;

@@ -29,7 +29,30 @@
 #include "io/video.h"
 #include "io/joystick.h"
 #include <SDL.h>
-#include <sys/param.h>
+
+#define    MIN(a,b)    (((a)<(b))?(a):(b))
+#define    MAX(a,b)    (((a)>(b))?(a):(b))
+
+bool read_touch_screen(float *x, float *y) {
+    int count = SDL_GetNumTouchDevices();
+
+    for (int idx = 0; idx < count; idx++) {
+        SDL_TouchID touchID = SDL_GetTouchDevice(idx);
+
+        int numTouches = SDL_GetNumTouchFingers(touchID);
+
+        if (numTouches > 0) {
+            SDL_Finger *finger = SDL_GetTouchFinger(touchID, 0);
+
+            *x = finger->x;
+            *y = finger->y;
+            
+            return true;
+        }
+    }
+
+    return false;
+}
 
 void hiiri_to(int x, int y) {
     int windowWidth, windowHeight;
@@ -54,6 +77,7 @@ void koords(int *x, int *y, int *n1, int *n2) {
     int windowWidth, windowHeight;
     SDL_GetWindowSize(video_state.window, &windowWidth, &windowHeight);
 
+#ifdef __SWITCH__
     // Use the first joystick to emulate a mouse (for devices without mouse
     // and with joysticks, like Nintendo Switch)
     //
@@ -77,6 +101,19 @@ void koords(int *x, int *y, int *n1, int *n2) {
         SDL_WarpMouseInWindow(video_state.window, mouseX, mouseY);
     }
 
-    *x = mouseX * video_state.surface->w / windowWidth;
-    *y = mouseY * video_state.surface->h / windowHeight;
+    // Read touch screen where available
+    float touchScreenX, touchScreenY;
+    if (read_touch_screen(&touchScreenX, &touchScreenY)) {
+        mouseX = touchScreenX * windowWidth;
+        mouseY = touchScreenY * windowHeight;
+
+        *n1 = 1;
+
+        // Correct mouse position for future events
+        SDL_WarpMouseInWindow(video_state.window, mouseX, mouseY);
+    }
+#endif
+
+    *x = (mouseX - video_state.viewportX) * video_state.surface->w / video_state.viewportWidth;
+    *y = (mouseY - video_state.viewportY) * video_state.surface->h / video_state.viewportHeight;
 }
