@@ -244,7 +244,7 @@ void swap_keyset_endianes(void) {
 void save_keyset(void) {
     FILE *faili;
 
-    faili = settings_open("keyset.dta", "wb");
+    faili = settings_open(KEYSET_FILENAME, "wb");
     if (faili == NULL) {
         printf("Unable to write keyboard data\n");
     } else {
@@ -258,7 +258,7 @@ void save_keyset(void) {
 void load_keyset(void) {
     FILE *faili;
 
-    if ((faili = settings_open("keyset.dta", "rb")) == NULL) {
+    if ((faili = settings_open(KEYSET_FILENAME, "rb")) == NULL) {
         player_keys[0].up = SDL_SCANCODE_X;
         player_keys[0].down = SDL_SCANCODE_W;
         player_keys[0].roll = SDL_SCANCODE_S;

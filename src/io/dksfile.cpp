@@ -40,7 +40,7 @@
 // Can't set this macro in the Makefile, mingw/msys keeps replacing the /
 // with C:/mingw64 ¬_¬'
 //
-#define TRIPLANE_DATA "romfs:/triplane"
+#define TRIPLANE_DATA "/triplane"
 #endif
 #define MAX_ENTRIES 8192
 

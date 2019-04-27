@@ -23,10 +23,16 @@
 #include <stdio.h>
 #include <SDL.h>
 
-#define ROSTER_FILENAME "roster.dta"
 #define MAX_PLAYERS_IN_ROSTER 150
+#ifdef __SWITCH__
+#define ROSTER_FILENAME "/triplane/roster.dta"
+#define CONFIGURATION_FILENAME "/triplane/triplane.cfg"
+#define KEYSET_FILENAME "/triplane/keyset.dta"
+#else
+#define ROSTER_FILENAME "roster.dta"
 #define CONFIGURATION_FILENAME "triplane.cfg"
 #define KEYSET_FILENAME "keyset.dta"
+#endif
 
 struct keymap {
     SDL_Scancode up;

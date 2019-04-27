@@ -3593,11 +3593,6 @@ int main(int argc, char *argv[]) {
     }
 
 #ifdef __SWITCH__
-    Result rc = romfsInit();
-    if (R_FAILED(rc)) {
-        printf("\n\nError initializing romfs\n");
-        exit(1);
-    }
 #endif
 
     if (findparameter("-loadtexts"))
