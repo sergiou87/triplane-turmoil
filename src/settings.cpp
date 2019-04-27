@@ -332,6 +332,13 @@ void restore_default_roster(FILE *faili) {
 
     }
 
+// Since text input is a pain in Switch, initialize some names
+#ifdef __SWITCH__
+    for (int idx = 0; idx < 4; idx++) {
+        sprintf(roster[idx].pilotname, "Player %d", idx + 1);
+    }
+#endif
+
     swap_roster_endianes();
     fwrite(&roster, sizeof(roster), 1, faili);
     fclose(faili);
