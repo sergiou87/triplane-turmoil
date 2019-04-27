@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-struct video_state_t video_state = { 0, 0, NULL, NULL, NULL, NULL, 0 };
+struct video_state_t video_state = { 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, 0 };
 
 struct naytto ruutu;
 
@@ -106,6 +106,11 @@ void do_all(int do_retrace) {
         dstRect.w = dstRect.h * textureAspectRatio;
         dstRect.x = (windowWidth - dstRect.w) >> 1;
     }
+
+    video_state.viewportX = dstRect.x;
+    video_state.viewportY = dstRect.y;
+    video_state.viewportWidth = dstRect.w;
+    video_state.viewportHeight = dstRect.h;
 
     SDL_RenderCopy(video_state.renderer, video_state.texture, NULL, &dstRect);
     SDL_RenderPresent(video_state.renderer);
