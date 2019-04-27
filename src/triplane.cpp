@@ -21,6 +21,9 @@
 #define MAIN_VERSION 1
 #define SUB_VERSION 3
 
+#ifdef __SWITCH__
+#include <switch.h>
+#endif
 
 //\\\\ Includes
 
@@ -3588,6 +3591,14 @@ int main(int argc, char *argv[]) {
         printf("\n");
         exit(0);
     }
+
+#ifdef __SWITCH__
+    Result rc = romfsInit();
+    if (R_FAILED(rc)) {
+        printf("\n\nError initializing romfs\n");
+        exit(1);
+    }
+#endif
 
     if (findparameter("-loadtexts"))
         loading_texts = 1;

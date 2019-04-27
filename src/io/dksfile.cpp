@@ -35,6 +35,12 @@
 #include "util/wutil.h"
 #include "io/dksfile.h"
 
+#ifdef __SWITCH__
+// Can't set this macro in the Makefile, mingw/msys keeps replacing the /
+// with C:/mingw64 ¬_¬'
+//
+#define TRIPLANE_DATA "romfs:/triplane"
+#endif
 #define MAX_ENTRIES 8192
 
 #pragma pack(1)

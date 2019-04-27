@@ -29,18 +29,19 @@ TRIPLANE_SRCS = $(TRIPLANE_OBJS:.o=.cpp)
 LVLEDIT_SRCS = $(LVLEDIT_OBJS:.o=.cpp)
 PGDVIEW_SRCS = $(PGDVIEW_OBJS:.o=.cpp)
 PCX2PGD_SRCS = $(PCX2PGD_OBJS:.o=.cpp)
-ALLSRCS = $(COMMON_SRCS) $(TRIPLANE_SRCS) $(LVLEDIT_SRCS) $(PGDVIEW_SRCS) $(PCX2PGD_SRCS)
+ALLSRCS = $(COMMON_SRCS) $(TRIPLANE_SRCS) 
+NONGAME_SRCS = $(LVLEDIT_SRCS) $(PGDVIEW_SRCS) $(PCX2PGD_SRCS)
 
 all: checkdepend triplane tools/dksbuild fokker.dks tools/lvledit tools/pgdview
 
 checkdepend:
 	@[ -f .depend ] || ( echo 'Please run "make depend" first!'; exit 1 )
 
-depend: $(ALLSRCS)
+depend: $(ALLSRCS) $(NONGAME_SRCS)
 	rm -f .depend
 	touch .depend
 	(set -e; \
-	for src in $(ALLSRCS); do \
+	for src in $(ALLSRCS) $(NONGAME_SRCS); do \
 		$(CXX) -MM -MT "`echo "$$src" | sed 's/\\.cpp$$/.o/'`" $(CFLAGS) "$$src" >>.depend; \
 	done)
 	echo "fokker.dks: tools/dksbuild data/fokker.lst \\" >>.depend
