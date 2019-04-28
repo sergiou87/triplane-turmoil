@@ -47,7 +47,7 @@ INCLUDES	:=	src
 APP_TITLE	:= Triplane Turmoil
 APP_AUTHOR 	:= sergiou87
 APP_VERSION := 1.0.9
-ICON        := switch-icon.jpg
+ICON        := switch/launcher-icon.jpg
 
 #---------------------------------------------------------------------------------
 # options for code generation
