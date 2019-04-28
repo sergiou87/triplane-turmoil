@@ -3624,7 +3624,9 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-#ifdef __SWITCH__
+#if defined(__SWITCH__) && defined(DEBUG)
+    socketInitializeDefault();              // Initialize sockets
+    nxlinkStdio();                          // Redirect stdout and stderr over the network to nxlink
 #endif
 
     if (findparameter("-loadtexts"))
@@ -3836,6 +3838,10 @@ int main(int argc, char *argv[]) {
     clean_memory();
 
     destroy_video();
+
+#if defined(__SWITCH__) && defined(DEBUG)
+    socketExit();
+#endif
 
     return 0;
 }
