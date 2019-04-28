@@ -54,13 +54,12 @@ $ make -f Makefile.switch
 You need to put the following files in your SD card:
  / (root)
  |
- |-- triplane/
- |     |
- |     |-- fokker.dks
- |
  |-- switch/
        |
-       |-- triplane-turmoil.nro
+       |-- triplane-turmoil
+               |
+               |-- triplane-turmoil.nro
+               |-- fokker.dks
 
 Copyrights
 ==========

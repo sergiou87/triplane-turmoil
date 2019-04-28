@@ -57,7 +57,11 @@ ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	-D__SWITCH__ $(INCLUDE) `sdl2-config --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_VERSION=\"$(APP_VERSION)\""
+CFLAGS	+=	-D__SWITCH__ $(INCLUDE) `sdl2-config --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_VERSION=\"$(APP_VERSION)\"" "-DTRIPLANE_DATA=\".\""
+
+ifeq ($(DEBUG),1)
+	CFLAGS += -DDEBUG
+endif
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
