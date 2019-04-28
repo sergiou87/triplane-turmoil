@@ -33,7 +33,7 @@ players are created by default, which have assigned the corresponding
 gamepad to their player number.
 
 The default controls are:
-- Up/Down: left joystick
+- Up/Down: left joystick or directional pad
 - Guns: Y button
 - Bombs: B button
 - Roll: X button

@@ -149,7 +149,27 @@ static int is_joystick_action_active(int t, const joystick_action * a) {
     if (a->type == 1) {
         return SDL_GameControllerGetButton(joydev[t], (SDL_GameControllerButton)a->n);
     } else if (a->type == 2) {
-        Sint16 v = SDL_GameControllerGetAxis(joydev[t], (SDL_GameControllerAxis)a->n);
+
+        SDL_GameControllerAxis axis = (SDL_GameControllerAxis)a->n;
+
+        if (axis == SDL_CONTROLLER_AXIS_LEFTY) {
+            if (a->threshold_dir == 0 && SDL_GameControllerGetButton(joydev[t], SDL_CONTROLLER_BUTTON_DPAD_DOWN)) {
+                return 1;
+            }
+            else if (a->threshold_dir == 1 && SDL_GameControllerGetButton(joydev[t], SDL_CONTROLLER_BUTTON_DPAD_UP)) {
+                return 1;
+            }
+        }
+        else if (axis == SDL_CONTROLLER_AXIS_LEFTX) {
+            if (a->threshold_dir == 0 && SDL_GameControllerGetButton(joydev[t], SDL_CONTROLLER_BUTTON_DPAD_RIGHT)) {
+                return 1;
+            }
+            else if (a->threshold_dir == 1 && SDL_GameControllerGetButton(joydev[t], SDL_CONTROLLER_BUTTON_DPAD_LEFT)) {
+                return 1;
+            }
+        }
+
+        Sint16 v = SDL_GameControllerGetAxis(joydev[t], axis);
         if (a->threshold_dir == 1)      /* upper bound */
             return (v < a->threshold);
         else
