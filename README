@@ -18,6 +18,50 @@ Please read the manual page for information on how to actually play
 the game. Also see README.install if you want to build the game from
 source code.
 
+Nintendo Switch Port
+====================
+
+The Nintendo Switch port has been built using DevkitPro (https://devkitpro.org/)
+and libnx (https://github.com/switchbrew/libnx).
+
+The whole game should be playable, controls have been adapted to the
+Switch, including the use of the touch screen or the left joystick
+and the A button as a mouse to navigate the menus.
+
+The roster is not functional yet, as you cannot input text, so 4
+players are created by default, which have assigned the corresponding
+gamepad to their player number.
+
+The default controls are:
+- Up/Down: left joystick
+- Guns: Y button
+- Bombs: B button
+- Roll: X button
+- Power: R button
+- Exit/back: - button
+- Help: + button
+
+These controls cannot be easily changed from inside the game _yet_.
+
+In order to build it for Nintendo Switch, you need to first build
+the file fokker.dks:
+$ make depend
+$ make fokker.dks
+
+Then you can build the game itself for Nintendo Switch:
+$ make -f Makefile.switch
+
+You need to put the following files in your SD card:
+ / (root)
+ |
+ |-- triplane/
+ |     |
+ |     |-- fokker.dks
+ |
+ |-- switch/
+       |
+       |-- triplane-turmoil.nro
+
 Copyrights
 ==========
 
