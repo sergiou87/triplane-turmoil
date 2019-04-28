@@ -44,7 +44,10 @@ DATA		:=	bindata
 INCLUDES	:=	src
 #ROMFS	:=	romfs
 
-VERSION      = 1.0.9
+APP_TITLE	:= Triplane Turmoil
+APP_AUTHOR 	:= sergiou87
+APP_VERSION := 1.0.9
+ICON        := switch-icon.jpg
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -54,7 +57,7 @@ ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	-D__SWITCH__ $(INCLUDE) `sdl2-config --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_VERSION=\"$(VERSION)\""
+CFLAGS	+=	-D__SWITCH__ $(INCLUDE) `sdl2-config --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_VERSION=\"$(APP_VERSION)\""
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
