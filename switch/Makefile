@@ -39,9 +39,9 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	src src/gfx src/io src/menus src/tools src/util src/world
+SOURCES		:=	../src ../src/gfx ../src/io ../src/menus ../src/tools ../src/util ../src/world
 DATA		:=	bindata
-INCLUDES	:=	src
+INCLUDES	:=	../src
 #ROMFS	:=	romfs
 
 APP_TITLE	:= Triplane Turmoil
