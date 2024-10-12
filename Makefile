@@ -6,7 +6,7 @@ OPTIFLAG     = -O2 -g
 SDL_CONFIG  ?= sdl2-config
 VERSION      = 1.0.11
 CFLAGS      := -Wall -Isrc $(OPTIFLAG) $(CFLAGS_NOSDL) `$(SDL_CONFIG) --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_DATA=\"$(PREFIX)/share/games/triplane\"" "-DTRIPLANE_VERSION=\"$(VERSION)\""
-LDFLAGS      = 
+LDFLAGS      = -static-libgcc -static-libstdc++
 LIBS        := `$(SDL_CONFIG) --libs` -lSDL2_mixer -lm
 INSTALL_DATA     ?= install -m 644
 INSTALL_PROGRAM  ?= install
