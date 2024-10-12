@@ -5,7 +5,7 @@ cd switch
 make -j8 || exit 1
 
 # Bundle and prepare for release
-mkdir -p switch/TriplaneTurmoil
-mv TriplaneTurmoil.nro switch/TriplaneTurmoil/TriplaneTurmoil.nro
-cp ../fokker.dks switch/TriplaneTurmoil/
-zip -r TriplaneTurmoil-switch.zip switch
+mkdir -p switch/triplane-turmoil
+mv triplane-turmoil.nro switch/triplane-turmoil/triplane-turmoil.nro
+cp ../fokker.dks switch/triplane-turmoil/fokker.dks
+zip -r triplane-turmoil-switch.zip switch
