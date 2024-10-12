@@ -34,11 +34,13 @@ jobs:
     needs: build-fokker-lst
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Download fokker.dks artifact
         uses: actions/download-artifact@v4
         with:
           name: data
+      - name: Display structure of downloaded files
+        run: ls -R
+      - uses: actions/checkout@v4
       - name: Build Triplane Turmoil
         run: |
           ./switch/ci-docker-run.sh ./switch/ci-build.sh
@@ -111,6 +113,8 @@ jobs:
           asset_path: switch-build/triplane-turmoil-switch.zip
           asset_name: triplane-turmoil-switch-${{ inputs.version }}.zip
           asset_content_type: application/zip
+      - name: Display structure of downloaded files
+        run: ls -R
       # - name: Upload Windows x86_64 Build Asset
       #   uses: actions/upload-release-asset@v1
       #   env:
