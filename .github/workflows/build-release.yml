@@ -34,11 +34,11 @@ jobs:
     needs: build-fokker-lst
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Download fokker.dks artifact
         uses: actions/download-artifact@v4
         with:
           name: data
-      - uses: actions/checkout@v4
       - name: Build Triplane Turmoil
         run: |
           ./switch/ci-docker-run.sh ./switch/ci-build.sh
