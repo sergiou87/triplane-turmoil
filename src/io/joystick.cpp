@@ -19,6 +19,7 @@
  */
 
 #include <assert.h>
+#include <cmath>
 #include <stdio.h>
 #include <SDL.h>
 #include <string.h>
