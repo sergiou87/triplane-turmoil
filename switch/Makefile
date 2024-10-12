@@ -37,30 +37,31 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   of a homebrew executable (.nro). This is intended to be used for sysmodules.
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	triplane-turmoil
 BUILD		:=	build
 SOURCES		:=	../src ../src/gfx ../src/io ../src/menus ../src/tools ../src/util ../src/world
 DATA		:=	bindata
 INCLUDES	:=	../src
+EXCLUDE     :=
 #ROMFS	:=	romfs
 
 APP_TITLE	:= Triplane Turmoil
-APP_AUTHOR 	:= sergiou87
-ICON        := switch/launcher-icon.jpg
+APP_AUTHOR	:=  sergiou87
 APP_VERSION := 1.0.11
+ICON        := launcher-icon.jpg
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
+ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	-D__SWITCH__ $(INCLUDE) `sdl2-config --cflags` -DHAVE_SDL_MIXER "-DTRIPLANE_VERSION=\"$(APP_VERSION)\"" "-DTRIPLANE_DATA=\".\""
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__ `$(PREFIX)pkg-config --cflags SDL2_mixer sdl2` -DHAVE_SDL2 -DHAVE_SDL_MIXER "-DTRIPLANE_VERSION=\"$(APP_VERSION)\"" "-DTRIPLANE_DATA=\".\""
 
 ifeq ($(DEBUG),1)
-	CFLAGS += -DDEBUG
+	CFLAGS += -DDEBUG=1
 endif
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
@@ -68,7 +69,8 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lnx -lSDL2_mixer `sdl2-config --libs` -lmpg123 -lmodplug -lvorbisfile -lvorbis -logg -lopusfile -lopus
+#LIBS	:= `$(PREFIX)pkg-config --libs SDL2_mixer sdl2` -lstdc++ -lm
+LIBS	:= -lnx `$(PREFIX)pkg-config --libs SDL2_mixer sdl2` -lmpg123 -lmodplug -lvorbisfile -lvorbis -logg -lopusfile -lopus
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -92,13 +94,12 @@ export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
-# CFILES		:=	$(shell cd $(SOURCES) && find . -name "*.c")
-# CPPFILES	:=	$(shell cd $(SOURCES) && find . -name "*.cpp")
-# SFILES		:=	$(shell cd $(SOURCES) && find . -name "*.s")
-CFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+
+CFILES := $(filter-out $(EXCLUDE),$(CFILES))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -169,13 +170,12 @@ endif
 
 .PHONY: $(BUILD) clean all
 
-
 #---------------------------------------------------------------------------------
 all: $(BUILD)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.switch
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
@@ -186,17 +186,14 @@ else
 	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
 endif
 
+run:
+	nxlink -p triplane-turmoil/triplane-turmoil.nro -s triplane-turmoil.nro
 
 #---------------------------------------------------------------------------------
 else
 .PHONY:	all
 
-DEPENDS	:=	$(notdir $(OFILES:.o=.d))
-
-# %.o: .*/%.cpp
-# 	echo $(CPPFILES)
-# 	echo "holi"
-# 	echo $<
+DEPENDS	:=	$(OFILES:.o=.d)
 
 #---------------------------------------------------------------------------------
 # main targets
