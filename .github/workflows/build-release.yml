@@ -38,8 +38,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: data
-      - name: Display structure of downloaded files
-        run: ls -R
       - uses: actions/checkout@v4
       - name: Build Triplane Turmoil
         run: |
@@ -110,11 +108,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: switch-build/triplane-turmoil-switch.zip
+          asset_path: triplane-turmoil-switch.zip
           asset_name: triplane-turmoil-switch-${{ inputs.version }}.zip
           asset_content_type: application/zip
-      - name: Display structure of downloaded files
-        run: ls -R
       # - name: Upload Windows x86_64 Build Asset
       #   uses: actions/upload-release-asset@v1
       #   env:
