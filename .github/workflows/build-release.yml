@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-fokker-lst:
-    name: Build fokker.dks
+    name: Build data
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fokker.dks
+          name: data
           path: fokker.dks
   build-switch:
     name: Nintendo Switch
@@ -38,8 +38,7 @@ jobs:
       - name: Download fokker.dks artifact
         uses: actions/download-artifact@v4
         with:
-          name: fokker.dks
-          path: fokker.dks
+          name: data
       - name: Build Triplane Turmoil
         run: |
           ./switch/ci-docker-run.sh ./switch/ci-build.sh
