@@ -7,3 +7,6 @@ pgdview
 pcx2pgd
 triplane
 .vscode/
+tools/dksbuild.exe
+*.dll
+switch/build/
