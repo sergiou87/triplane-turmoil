@@ -131,7 +131,7 @@ void open_joystick(int joy) {
         return;
 
     if (joydev[joy] == NULL)
-        joydev[joy] = SDL_GameControllerOpen(i);
+        joydev[joy] = SDL_GameControllerOpen(joy);
 }
 
 void close_joystick(int joy) {
