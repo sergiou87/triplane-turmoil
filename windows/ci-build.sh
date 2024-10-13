@@ -17,7 +17,7 @@ echo "Arch: ${ARCH_SUFFIX}"
 echo "Mingw: ${MINGW_PREFFIX}"
 
 pushd ..
-make -j8 || exit
+make -j8 triplane || exit
 popd
 
 mv ../triplane.exe ../triplane-tmp.exe
