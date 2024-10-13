@@ -16,18 +16,12 @@ fi
 echo "Arch: ${ARCH_SUFFIX}"
 echo "Mingw: ${MINGW_PREFFIX}"
 
-pushd ..
 make -j8 triplane || exit
-popd
 
-mv ../triplane.exe ../triplane-tmp.exe
+cd windows
 mkdir -p triplane-turmoil
-cp ../triplane-tmp.exe ./triplane-turmoil/triplane.exe
+cp ../triplane.exe ./triplane-turmoil/triplane.exe
 cp ../fokker.dks ./triplane-turmoil/fokker.dks
-
-for F in `ldd ../triplane-tmp.exe | grep ${MINGW_PREFFIX} | cut -d' ' -f3`
-do
-    cp $F ./triplane-turmoil/
-done
+cp /usr/local/sdl-dlls/{SDL2.dll,SDL2_mixer.dll,optional/libxmp.dll} ./triplane-turmoil/
 
 zip -r triplane-turmoil-windows-${ARCH_SUFFIX}.zip ./triplane-turmoil
