@@ -5,8 +5,7 @@ LABEL author="Sergio Padrino (@sergiou87)"
 
 # install dependencies
 RUN apt-get update \
-   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends unzip python3-pip \
-   && pip3 install mingw_ldd
+   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends unzip
 
 ENV DOCKER_SDL2_VERSION="2.30.8"
 ENV DOCKER_SDL_MIXER_VERSION="2.8.0"
