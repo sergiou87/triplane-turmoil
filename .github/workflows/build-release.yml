@@ -48,36 +48,37 @@ jobs:
         with:
           name: switch-build
           path: switch/triplane-turmoil-switch.zip
-  # build-windows-x86_64:
-  #   name: Windows x86_64
-  #   runs-on: windows-latest
-  #   steps:
-  #     - uses: msys2/setup-msys2@v2
-  #     - run: git config --global core.autocrlf false
-  #     - uses: actions/checkout@v4
-  #     - name: Download fokker.lst artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: fokker.lst
-  #         path: data/fokker.lst
-  #     - name: Prepare build environment
-  #       run: |
-  #         msys2 -c './windows/ci-prepare.sh x86_64'
-  #     - name: Build Triplane Turmoil
-  #       run: |
-  #         cd windows
-  #         msys2 -c './ci-build.sh x86_64'
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: windows-x86_64-build
-  #         path: windows/triplane-turmoil-windows-x86_64.zip
+  build-windows-x86_64:
+    name: Windows x86_64
+    needs: build-fokker-lst
+    runs-on: windows-latest
+    steps:
+      - uses: msys2/setup-msys2@v2
+      - run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - name: Download fokker.lst artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fokker.lst
+          path: data/fokker.lst
+      - name: Prepare build environment
+        run: |
+          msys2 -c './windows/ci-prepare.sh x86_64'
+      - name: Build Triplane Turmoil
+        run: |
+          cd windows
+          msys2 -c './ci-build.sh x86_64'
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x86_64-build
+          path: windows/triplane-turmoil-windows-x86_64.zip
   create-release:
     name: Create release
     needs:
       [
         build-switch,
-        # build-windows-x86_64,
+        build-windows-x86_64,
       ]
     runs-on: ubuntu-latest
     steps:
@@ -87,10 +88,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: switch-build
-      # - name: Download Windows x86_64 Build Asset
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: windows-x86_64-build
+      - name: Download Windows x86_64 Build Asset
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-x86_64-build
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
@@ -111,12 +112,12 @@ jobs:
           asset_path: triplane-turmoil-switch.zip
           asset_name: triplane-turmoil-switch-${{ inputs.version }}.zip
           asset_content_type: application/zip
-      # - name: Upload Windows x86_64 Build Asset
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: windows-x86_64-build/triplane-turmoil-windows-x86_64.zip
-      #     asset_name: triplane-turmoil-windows-x86_64-${{ inputs.version }}.zip
-      #     asset_content_type: application/zip
+      - name: Upload Windows x86_64 Build Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: windows-x86_64-build/triplane-turmoil-windows-x86_64.zip
+          asset_name: triplane-turmoil-windows-x86_64-${{ inputs.version }}.zip
+          asset_content_type: application/zip
