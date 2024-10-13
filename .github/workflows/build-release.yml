@@ -29,6 +29,7 @@ jobs:
         with:
           name: data
           path: fokker.dks
+          if-no-files-found: error
   build-switch:
     name: Nintendo Switch
     needs: build-fokker-lst
@@ -48,6 +49,7 @@ jobs:
         with:
           name: switch-build
           path: switch/triplane-turmoil-switch.zip
+          if-no-files-found: error
   build-windows-x86_64:
     name: Windows x86_64
     needs: build-fokker-lst
@@ -66,6 +68,7 @@ jobs:
         with:
           name: windows-x86_64-build
           path: windows/triplane-turmoil-windows-x86_64.zip
+          if-no-files-found: error
   create-release:
     name: Create release
     needs:
