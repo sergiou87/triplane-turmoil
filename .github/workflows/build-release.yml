@@ -56,11 +56,10 @@ jobs:
       - uses: msys2/setup-msys2@v2
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
-      - name: Download fokker.lst artifact
+      - name: Download fokker.dks artifact
         uses: actions/download-artifact@v4
         with:
-          name: fokker.lst
-          path: data/fokker.lst
+          name: data
       - name: Prepare build environment
         run: |
           msys2 -c './windows/ci-prepare.sh x86_64'
