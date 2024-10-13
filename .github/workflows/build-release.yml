@@ -62,7 +62,7 @@ jobs:
           name: data
       - name: Build Triplane Turmoil
         run: |
-          ./windows/ci-docker-run.sh ./windows/ci-build.sh
+          ./windows/ci-docker-run.sh ./windows/ci-build.sh x86_64
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
