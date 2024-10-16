@@ -96,7 +96,7 @@ jobs:
         with:
           tag_name: ${{ inputs.version }}
           release_name: Triplane Turmoil ${{ inputs.version }}
-          body: ${{ inputs.release_notes || steps.read_release_notes.outputs.release_notes }}
+          body: ${{ inputs.release_notes }}
           draft: true
           prerelease: ${{ inputs.prerelease }}
       - name: Upload Nintendo Switch Build Asset
