@@ -513,13 +513,8 @@ void load_config(void) {
     config.unlimited_gas = 0;
 
     for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
-#ifdef __SWITCH__
         config.joystick[idx] = idx;
         config.joystick_calibrated[idx] = 1;
-#else
-        config.joystick[idx] = -1;
-        config.joystick_calibrated[idx] = 0;
-#endif
     }
 
     faili = settings_open(CONFIGURATION_FILENAME, "rb");

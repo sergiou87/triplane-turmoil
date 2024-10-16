@@ -3609,7 +3609,6 @@ int main(int argc, char *argv[]) {
 
     parametri_kpl = argc;
 
-
     if (findparameter("-?") || findparameter("-h") || findparameter("--help") || findparameter("-help")) {
         printf("Triplane Classic " TRIPLANE_VERSION " - a side-scrolling dogfighting game.\n");
         printf("Copyright (C) 1996,1997,2009  Dodekaedron Software Creations Oy\n");
@@ -3666,13 +3665,8 @@ int main(int argc, char *argv[]) {
     if (anyJoystickCalibrated) {
         if (!load_joysticks_data(CALIBRATION_FILENAME)) {
             for (int idx = 0; idx < MAX_JOYSTICK_COUNT; idx++) {
-#ifdef __SWITCH__                
                 config.joystick_calibrated[idx] = 1;
                 config.joystick[idx] = idx;
-#else
-                config.joystick_calibrated[idx] = 0;
-                config.joystick[idx] = -1;
-#endif
             }
             loading_text("Unable to load calibration data.");
         }
