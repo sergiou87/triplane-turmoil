@@ -94,8 +94,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ inputs.version }}
-          release_name: Triplane Turmoil ${{ inputs.version }}
+          tag_name: v${{ inputs.version }}
+          release_name: Triplane Turmoil v${{ inputs.version }}
           body: ${{ inputs.release_notes }}
           draft: true
           prerelease: ${{ inputs.prerelease }}
